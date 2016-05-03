@@ -1,0 +1,15 @@
+extends: xo/esnext
+
+rules:
+  indent:
+    - error
+    - 2
+    -
+      SwitchCase: 1
+
+  valid-jsdoc:
+    - off
+    -
+      requireReturn: false
+      prefer:
+        returns: return
