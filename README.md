@@ -80,10 +80,12 @@ or
 
 ```javascript
 /* register configuration source class */
-config.register(SequelizeConfigSource);
+config.register('seqelize', SequelizeConfigSource);
 /* add configuration source */
 config.source('seqelize', {
   model: 'param'
 });
 
 ```
+
+on how to make your own configuration source class see '[src/sources](src/sources)' directory.
