@@ -3,8 +3,7 @@ import _ from 'lodash';
 import {EventEmitter} from 'events';
 import {ConfigProvider} from './provider';
 
-const $classes = Symbol('classes');
-const $providers = Symbol('providers');
+const classes = {};
 
 class ConfigProxy {
   constructor(root, path) {
@@ -31,48 +30,44 @@ class ConfigProxy {
 export class Config extends EventEmitter {
   constructor() {
     super();
-    this[$classes] = {};
-    this[$providers] = [];
-
-    this.register('object', require('./providers/object'));
-
-    if (os.platform === 'browser') {
-      this.register('localStorage', require('./providers/localStorage'));
-    } else {
-      this.register('file', require('./providers/file'));
-      this.register('directory', require('./providers/directory'));
-    }
+    this._providers = [];
   }
 
   /**
    * @param {String} name - Provider class name.
    * @param {Class} klass - Class extending ConfigProvider.
    */
-  register(name, klass) {
-    this[$classes][name] = klass;
+  static register(name, klass) {
+    classes[name] = klass;
   }
 
   /**
    * Adds provider.
-   * @param {Provider} provider
+   * @param {String|Object|ConfigProvider} provider
+   * @param {Object} [options]
    */
-  provider(arg1, arg2) {
-    if (typeof arg1 === 'string') {
-      const Class = this[$classes][arg1];
+  provider(provider, options) {
+    if (_.isObject(provider)) {
+      options = provider;
+      provider = 'object';
+    }
+
+    if (_.isString(provider)) {
+      const Class = classes[provider];
 
       if (!Class) {
-        throw new TypeError(`Provider class '${arg1}' is unknown.`);
+        throw new TypeError(`Provider class '${provider}' is unknown.`);
       }
 
-      this[$providers].push(new Class(arg2));
-    } else if (arg1 instanceof ConfigProvider) {
-      this[$providers].push(arg1);
-    } else if (typeof arg1 === 'object') {
-      this.provider('object', arg1);
-    } else {
+      provider = new Class(options);
+    }
+
+    if (!(provider instanceof ConfigProvider)) {
       throw new TypeError();
     }
 
+    provider.mutable = options && options.mutable && _.isFunction(provider.set);
+    this._providers.push(provider);
     return this;
   }
 
@@ -81,7 +76,7 @@ export class Config extends EventEmitter {
    */
   reload() {
     return Promise.all(
-      this[$providers].map(a => a.load())
+      this._providers.map(a => a.load())
     ).then(configs => {
       _.merge(this, ...configs);
     });
@@ -113,7 +108,7 @@ export class Config extends EventEmitter {
         _.set(this, key, value);
         super.emit(key, value);
 
-        const list = _.filter(this[$providers], {mutable: true});
+        const list = _.filter(this._providers, {mutable: true});
         return Promise.all(
           list.map(a => a.set(key, value))
         );
@@ -125,7 +120,7 @@ export class Config extends EventEmitter {
    * @return {Promise}
    */
   remove(key) {
-    const list = _.filter(this[$providers], {mutable: true});
+    const list = _.filter(this._providers, {mutable: true});
     return Promise.all(
       list.map(a => a.remove(key))
     );
@@ -139,4 +134,16 @@ export class Config extends EventEmitter {
   of(path) {
     return new ConfigProxy(this, path);
   }
+}
+
+/*
+ * Register built-in providers.
+ */
+Config.register('object', require('./providers/object').default);
+if (os.platform() === 'browser') {
+  Config.register('localStorage', require('./providers/localStorage').default);
+} else {
+  Config.register('env', require('./providers/env').default);
+  Config.register('file', require('./providers/file').default);
+  Config.register('directory', require('./providers/directory').default);
 }

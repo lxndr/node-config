@@ -3,19 +3,16 @@ import _ from 'lodash';
 import {ConfigProvider} from '../provider';
 import jsonParser from '../parsers/json';
 
-/**
- * @classdesc
- */
 export default class FileConfigProvider extends ConfigProvider {
-  constructor(path, options = {}) {
+  constructor(options = {}) {
     super();
-    this.path = path;
     this.values = {};
 
     _.defaults(options, {
       parser: jsonParser
     });
 
+    this.path = options.path;
     this.parser = options.parser;
   }
 

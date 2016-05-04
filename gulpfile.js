@@ -36,16 +36,20 @@ gulp.task('build-browser', () => {
     ]
   });
 
-  b.bundle()
-    .pipe(source('config.js'))
-    .pipe(streamify(uglify({
+  let s = b.bundle()
+    .pipe(source('config.js'));
+
+  if (false) {
+    s = s.pipe(streamify(uglify({
       compress: {
         /* eslint-disable camelcase */
         dead_code: true
         /* eslint-enable camelcase */
       }
-    })))
-    .on('error', gutil.log)
+    })));
+  }
+
+  s = s.on('error', gutil.log)
     .pipe(gulp.dest('build/dist'));
 });
 

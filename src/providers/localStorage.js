@@ -14,16 +14,20 @@ export default class LocalStorageConfigProvider extends ConfigProvider {
     this.basePath = options.basePath || null;
   }
 
-  load() {
-    const obj = {};
-
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      const value = localStorage.getItem(key);
-      _.set(obj, key, value);
+  _parseString(s) {
+    try {
+      return JSON.parse(s);
+    } catch (e) {
+      /* if string could not be parsed, return as it is
+         if string empty, return null */
+      return s || null;
     }
+  }
 
-    return obj;
+  load() {
+    return _.transform(localStorage, (result, value, key) => {
+      _.set(result, key, this._parseString(value));
+    }, {});
   }
 
   set(key, value) {
@@ -31,6 +35,25 @@ export default class LocalStorageConfigProvider extends ConfigProvider {
   }
 
   remove(key) {
-    localStorage.removeItem(key);
+    const path = _.toPath(key);
+
+    _.flow(
+      () => {
+        return _.transform(localStorage, (result, _value, _key) => {
+          const _path = _.toPath(_key);
+          const hit = _.every(path, (item, index) => _path[index] === item);
+
+          if (hit) {
+            result.push(_key);
+          }
+        }, []);
+      },
+
+      keys => {
+        _.each(keys, key => {
+          localStorage.removeItem(key);
+        });
+      }
+    )();
   }
 }
