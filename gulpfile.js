@@ -5,6 +5,7 @@ const streamify = require('gulp-streamify');
 const browserify = require('browserify');
 const source = require('vinyl-source-stream');
 const babel = require('gulp-babel');
+const eslint = require('gulp-eslint');
 
 gulp.task('build', ['build-browser', 'build-node']);
 
@@ -29,19 +30,31 @@ gulp.task('build-browser', () => {
     standalone: 'config',
     entries: './src/index.js'
   }).transform('babelify', {
+    presets: ['es2015'],
     plugins: [
       'lodash'
-    ],
-    presets: ['es2015']
+    ]
   });
 
   b.bundle()
     .pipe(source('config.js'))
     .pipe(streamify(uglify({
       compress: {
+        /* eslint-disable camelcase */
         dead_code: true
+        /* eslint-enable camelcase */
       }
     })))
     .on('error', gutil.log)
     .pipe(gulp.dest('build/dist'));
+});
+
+/*
+ * Linting
+ */
+gulp.task('lint', () => {
+  return gulp.src(['src/**/*.js', 'tests/**/*.js', 'gulpfile.js'])
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError());
 });
