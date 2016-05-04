@@ -1,7 +1,7 @@
 /**
  * @abstract
  */
-export class ConfigSource {
+export class ConfigProvider {
   /**
    * Loads from the source.
    * @returns {Promise<Object>}

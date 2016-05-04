@@ -1,6 +1,9 @@
 extends: xo/esnext
 
 rules:
+  no-console:
+    - error
+
   indent:
     - error
     - 2

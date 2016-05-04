@@ -1,9 +1,9 @@
 /* globals localStorage */
 
 import _ from 'lodash';
-import {ConfigSource} from '../source';
+import {ConfigProvider} from '../provider';
 
-export class LocalStorageConfigSource extends ConfigSource {
+export default class LocalStorageConfigProvider extends ConfigProvider {
   constructor(options = {}) {
     super();
 

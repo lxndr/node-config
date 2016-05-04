@@ -1,7 +1,7 @@
 import _ from 'lodash';
-import {ConfigSource} from '../source';
+import {ConfigProvider} from '../provider';
 
-export class ObjectConfigSource extends ConfigSource {
+export default class ObjectConfigProvider extends ConfigProvider {
   constructor(object) {
     super();
     this.object = _.clone(object);

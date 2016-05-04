@@ -1,12 +1,10 @@
+import os from 'os';
 import _ from 'lodash';
 import {EventEmitter} from 'events';
-import {ConfigSource} from './source';
-import {ObjectConfigSource} from './sources/object';
-import {LocalStorageConfigSource} from './sources/localStorage';
-import {YamlConfigSource} from './sources/yaml';
+import {ConfigProvider} from './provider';
 
 const $classes = Symbol('classes');
-const $sources = Symbol('sources');
+const $providers = Symbol('providers');
 
 class ConfigProxy {
   constructor(root, path) {
@@ -14,14 +12,16 @@ class ConfigProxy {
     this.path = path;
   }
 
+  fullPath(key) {
+    return key ? `${this.path}.${key}` : `${this.path}`;
+  }
+
   get(key, def) {
-    key = key ? `${this.path}.${key}` : `${this.path}`;
-    return this.root.get(key, def);
+    return this.root.get(this.fullPath(key), def);
   }
 
   remove(key) {
-    key = key ? `${this.path}.${key}` : `${this.path}`;
-    return this.root.remove(key);
+    return this.root.remove(this.fullPath(key));
   }
 }
 
@@ -32,38 +32,43 @@ export class Config extends EventEmitter {
   constructor() {
     super();
     this[$classes] = {};
-    this[$sources] = [];
+    this[$providers] = [];
 
-    this.register('object', ObjectConfigSource);
-    this.register('localStorage', LocalStorageConfigSource);
-    this.register('yaml', YamlConfigSource);
+    this.register('object', require('./providers/object'));
+
+    if (os.platform === 'browser') {
+      this.register('localStorage', require('./providers/localStorage'));
+    } else {
+      this.register('file', require('./providers/file'));
+      this.register('directory', require('./providers/directory'));
+    }
   }
 
   /**
-   * @param {String} name - Source class name.
-   * @param {Class} klass - Class extending ConfigSource.
+   * @param {String} name - Provider class name.
+   * @param {Class} klass - Class extending ConfigProvider.
    */
   register(name, klass) {
     this[$classes][name] = klass;
   }
 
   /**
-   * Adds source.
-   * @param {Source} source
+   * Adds provider.
+   * @param {Provider} provider
    */
-  source(arg1, arg2) {
+  provider(arg1, arg2) {
     if (typeof arg1 === 'string') {
       const Class = this[$classes][arg1];
 
       if (!Class) {
-        throw new TypeError(`Source class '${arg1}' is unknown.`);
+        throw new TypeError(`Provider class '${arg1}' is unknown.`);
       }
 
-      this[$sources].push(new Class(arg2));
-    } else if (arg1 instanceof ConfigSource) {
-      this[$sources].push(arg1);
+      this[$providers].push(new Class(arg2));
+    } else if (arg1 instanceof ConfigProvider) {
+      this[$providers].push(arg1);
     } else if (typeof arg1 === 'object') {
-      this[$sources].push(new ObjectConfigSource(arg1));
+      this.provider('object', arg1);
     } else {
       throw new TypeError();
     }
@@ -76,7 +81,7 @@ export class Config extends EventEmitter {
    */
   reload() {
     return Promise.all(
-      this[$sources].map(a => a.load())
+      this[$providers].map(a => a.load())
     ).then(configs => {
       _.merge(this, ...configs);
     });
@@ -108,7 +113,7 @@ export class Config extends EventEmitter {
         _.set(this, key, value);
         super.emit(key, value);
 
-        const list = _.filter(this[$sources], {mutable: true});
+        const list = _.filter(this[$providers], {mutable: true});
         return Promise.all(
           list.map(a => a.set(key, value))
         );
@@ -120,7 +125,7 @@ export class Config extends EventEmitter {
    * @return {Promise}
    */
   remove(key) {
-    const list = _.filter(this[$sources], {mutable: true});
+    const list = _.filter(this[$providers], {mutable: true});
     return Promise.all(
       list.map(a => a.remove(key))
     );

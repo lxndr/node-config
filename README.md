@@ -5,25 +5,25 @@ Application configuration manager for Node.js and browsers.
 ```javascript
 const config = new Config()
   /* default values */
-  .source({
+  .provider({
     a: 1,
     b: [2, 3, true]
   })
   /* browser local storage */
-  .source('localStorage', {
+  .provider('localStorage', {
     mutable: true
   })
   /* JSON file */
-  .source('file', {
+  .provider('file', {
     path: './config.json'
   })
   /* YAML file */
-  .source('file', {
+  .provider('file', {
     path: './config.json',
     parser: 'yaml'
   })
   /* directory */
-  .source('directory', {
+  .provider('directory', {
     path: './config',
     parser: 'yaml' /* defaults to 'json' */
   });
@@ -54,7 +54,7 @@ const cfg = config.of('b')
 import * as json5 from 'json5';
 
 const config = new Config()
-  .source('file', {
+  .provider('file', {
     path: './config.json5',
     parser: {
       parse(text) {
@@ -68,10 +68,10 @@ const config = new Config()
   });
 ```
 
-**Custom source:**
+**Custom provider:**
 
 ```javascript
-config.source(new SequelizeConfigSource({
+config.provider(new SequelizeConfigProvider({
   model: 'param'
 }));
 ```
@@ -79,13 +79,13 @@ config.source(new SequelizeConfigSource({
 or
 
 ```javascript
-/* register configuration source class */
-config.register('seqelize', SequelizeConfigSource);
-/* add configuration source */
-config.source('seqelize', {
+/* register configuration provider class */
+config.register('seqelize', SequelizeConfigProvider);
+/* add configuration provider */
+config.provider('seqelize', {
   model: 'param'
 });
 
 ```
 
-on how to make your own configuration source class see '[src/sources](src/sources)' directory.
+on how to make your own configuration provider class see [src/providers](src/providers) directory.
