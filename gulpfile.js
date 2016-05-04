@@ -29,18 +29,19 @@ gulp.task('build-browser', () => {
     standalone: 'config',
     entries: './src/index.js'
   }).transform('babelify', {
+    plugins: [
+      'lodash'
+    ],
     presets: ['es2015']
   });
 
   b.bundle()
     .pipe(source('config.js'))
-/*
     .pipe(streamify(uglify({
       compress: {
         dead_code: true
       }
     })))
-*/
     .on('error', gutil.log)
     .pipe(gulp.dest('build/dist'));
 });
