@@ -7,11 +7,6 @@ import {ConfigProvider} from '../provider';
 export default class EnvConfigProvider extends ConfigProvider {
   constructor(options = {}) {
     super();
-
-    if (typeof process === 'undefined') {
-      throw new Error('Environment variables is not supported by this platform');
-    }
-
     this.name = options.name || 'CONFIG';
   }
 

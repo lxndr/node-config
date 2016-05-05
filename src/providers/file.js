@@ -35,5 +35,6 @@ export default class FileConfigProvider extends ConfigProvider {
   }
 
   remove(key) {
+    _.unset(this.values, key);
   }
 }

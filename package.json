@@ -1,5 +1,5 @@
 {
-  "name": "lxndr/config",
+  "name": "config",
   "version": "0.1.0",
   "description": "Configuration manager for Node.js and web applications",
   "main": "index.js",
@@ -21,11 +21,11 @@
     "grunt-babel": "^6.0.0",
     "grunt-browserify": "^5.0.0",
     "grunt-contrib-clean": "^1.0.0",
-    "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-uglify": "^1.0.1",
     "grunt-eslint": "^18.1.0",
-    "jsdoc": "^3.4.0"
+    "jsdoc": "^3.4.0",
+    "load-grunt-tasks": "^3.5.0"
   },
   "dependencies": {
     "glob": "^7.0.3",

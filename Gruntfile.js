@@ -1,10 +1,24 @@
+'use strict';
+
 module.exports = function (grunt) {
-  grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-browserify');
-  grunt.loadNpmTasks('grunt-babel');
-  grunt.loadNpmTasks('grunt-eslint');
+  function formatBuiltinProviders(platform) {
+    const list = {
+      node: [
+        'object',
+        'env',
+        'directory',
+        'file'
+      ],
+      browser: [
+        'object',
+        'localStorage'
+      ]
+    };
+
+    return list[platform].map(x => `Config.register('object', require('./providers/${x}').default);\n`).join('');
+  }
+
+  require('load-grunt-tasks')(grunt);
 
   grunt.initConfig({
     clean: [
@@ -30,11 +44,6 @@ module.exports = function (grunt) {
     },
 
     babel: {
-      options: {
-        plugins: [
-          'transform-es2015-modules-commonjs'
-        ]
-      },
       dist: {
         files: [{
           expand: true,
@@ -42,6 +51,11 @@ module.exports = function (grunt) {
           src: '**/*.js',
           dest: 'build'
         }]
+      },
+      options: {
+        plugins: [
+          'transform-es2015-modules-commonjs'
+        ]
       }
     },
 

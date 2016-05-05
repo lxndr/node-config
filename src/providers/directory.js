@@ -1,7 +1,7 @@
 import glob from 'glob';
 import _ from 'lodash';
 import {ConfigProvider} from '../provider';
-import {FileConfigProvider} from '..';
+import {FileConfigProvider} from '../providers/file';
 import jsonParser from '../parsers/json';
 
 export default class DirectoryConfigProvider extends ConfigProvider {
