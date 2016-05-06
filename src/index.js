@@ -1,6 +1,7 @@
 import os from 'os';
 import _ from 'lodash';
 import {EventEmitter} from 'events';
+import * as util from './util';
 import {ConfigProvider} from './provider';
 
 const classes = {};
@@ -8,15 +9,24 @@ const classes = {};
 class ConfigProxy {
   constructor(root, path) {
     this.root = root;
-    this.path = path;
+    this.path = _.toPath(path);
   }
 
   fullPath(key) {
-    return key ? `${this.path}.${key}` : `${this.path}`;
+    return this.path.concat(_.toPath(key));
   }
 
   get(key, def) {
     return this.root.get(this.fullPath(key), def);
+  }
+
+  set(key, values) {
+    if (_.isObject(key)) {
+      values = key;
+      key = '';
+    }
+
+    return this.root.set(this.fullPath(key), values);
   }
 
   remove(key) {
@@ -92,25 +102,32 @@ export class Config extends EventEmitter {
   /**
    * @return {Promise}
    */
-  set(...args) {
-    let obj = null;
+  set(values) {
+    /* key, value */
+    if (arguments.length === 2 && (_.isString(values) || _.isArray(values))) {
+      const [key, value] = arguments;
+      values = {};
+      _.set(values, key, value);
+    }
 
-    if (args.length === 1) {
-      obj = args[0];
-    } else if (args.length >= 2) {
-      obj = {[args[0]]: args[1]};
-    } else {
+    /* object */
+    if (!_.isObject(values)) {
       throw new TypeError();
     }
 
-    return Promise.all(
-      _.map(obj, (value, key) => {
-        _.set(this, key, value);
-        super.emit(key, value);
+    const providers = _.filter(this._providers, {mutable: true});
+    const keys = [];
 
-        const list = _.filter(this._providers, {mutable: true});
+    util.merge(this, values, (path, value) => {
+      console.log(path, value);
+      keys.push({path, value});
+    });
+
+    return Promise.all(
+      _.map(keys, pair => {
+        console.log(pair.path, pair.value);
         return Promise.all(
-          list.map(a => a.set(key, value))
+          providers.map(a => a.set(pair.path, pair.value))
         );
       })
     );
@@ -120,9 +137,10 @@ export class Config extends EventEmitter {
    * @return {Promise}
    */
   remove(key) {
+    const path = _.toPath(key);
     const list = _.filter(this._providers, {mutable: true});
     return Promise.all(
-      list.map(a => a.remove(key))
+      list.map(a => a.remove(path))
     );
   }
 

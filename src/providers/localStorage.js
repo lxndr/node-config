@@ -1,6 +1,7 @@
 /* globals localStorage */
 
 import _ from 'lodash';
+import * as util from '../util';
 import {ConfigProvider} from '../provider';
 
 export default class LocalStorageConfigProvider extends ConfigProvider {
@@ -31,20 +32,15 @@ export default class LocalStorageConfigProvider extends ConfigProvider {
   }
 
   set(key, value) {
-    localStorage.setItem(key, value);
+    localStorage.setItem(key.join('.'), value);
   }
 
-  remove(key) {
-    const path = _.toPath(key);
-
+  remove(path) {
     _.flow(
       () => {
-        return _.transform(localStorage, (result, _value, _key) => {
-          const _path = _.toPath(_key);
-          const hit = _.every(path, (item, index) => _path[index] === item);
-
-          if (hit) {
-            result.push(_key);
+        return _.transform(localStorage, (result, value, key) => {
+          if (util.startsWith(_.toPath(key), path)) {
+            result.push(key);
           }
         }, []);
       },

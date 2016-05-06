@@ -66,7 +66,9 @@ module.exports = function (grunt) {
         }
       },
       options: {
-        standalone: 'config',
+        browserifyOptions: {
+          standalone: 'config'
+        },
         transform: [
           ['babelify', {
             presets: ['es2015'],

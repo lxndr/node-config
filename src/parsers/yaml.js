@@ -1,4 +1,4 @@
-import * as yaml from 'yaml';
+import * as yaml from 'js-yaml';
 
 export default {
   parse(text) {
