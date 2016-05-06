@@ -2,18 +2,26 @@ import fs from 'fs';
 import _ from 'lodash';
 import {ConfigProvider} from '../provider';
 import jsonParser from '../parsers/json';
+import yamlParser from '../parsers/yaml';
+
+const parsers = {
+  json: jsonParser,
+  yaml: yamlParser
+};
 
 export default class FileConfigProvider extends ConfigProvider {
   constructor(options = {}) {
     super();
     this.values = {};
-
-    _.defaults(options, {
-      parser: jsonParser
-    });
-
     this.path = options.path;
-    this.parser = options.parser;
+
+    this.parser = options.parser || 'json';
+    if (_.isString(this.parser)) {
+      if (!parsers[this.parser]) {
+        throw new TypeError(`Parser '${this.parser}' is unknown`);
+      }
+      this.parser = parsers[this.parser];
+    }
   }
 
   load() {
