@@ -1,6 +1,6 @@
 {
-  "name": "config",
-  "version": "0.1.0",
+  "name": "@lxndr/config",
+  "version": "1.0.0-alpha.1",
   "description": "Configuration manager for Node.js and web applications",
   "main": "lib/index.js",
   "author": "lxndr",
