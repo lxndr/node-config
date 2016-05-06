@@ -2,7 +2,7 @@
   "name": "config",
   "version": "0.1.0",
   "description": "Configuration manager for Node.js and web applications",
-  "main": "index.js",
+  "main": "lib/index.js",
   "author": "lxndr",
   "license": "MIT",
   "repository": "lxndr/node-config",
