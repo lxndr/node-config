@@ -119,13 +119,11 @@ export class Config extends EventEmitter {
     const keys = [];
 
     util.merge(this, values, (path, value) => {
-      console.log(path, value);
       keys.push({path, value});
     });
 
     return Promise.all(
       _.map(keys, pair => {
-        console.log(pair.path, pair.value);
         return Promise.all(
           providers.map(a => a.set(pair.path, pair.value))
         );
