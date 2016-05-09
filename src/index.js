@@ -128,7 +128,11 @@ export class Config extends EventEmitter {
           providers.map(a => a.set(pair.path, pair.value))
         );
       })
-    );
+    ).then(() => {
+      keys.forEach(pair => {
+        super.emit(pair.path.join('.'), pair.value);
+      });
+    });
   }
 
   /**
