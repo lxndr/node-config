@@ -7,8 +7,8 @@ function _merge(target, source, path, cb) {
 
   _.each(source, (value, key) => {
     const valuePath = path.concat([key]);
-    if (_.isObject(value)) {
-      if (!_.isObject(target[key])) {
+    if (_.isObjectLike(value)) {
+      if (!_.isObjectLike(target[key])) {
         target[key] = {};
       }
       _merge(target[key], value, valuePath, cb);

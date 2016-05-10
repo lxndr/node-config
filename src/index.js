@@ -21,7 +21,7 @@ class ConfigProxy {
   }
 
   set(key, values) {
-    if (_.isObject(key)) {
+    if (_.isObjectLike(key)) {
       values = key;
       key = '';
     }
@@ -57,7 +57,7 @@ export class Config extends EventEmitter {
    * @param {Object} [options]
    */
   provider(provider, options) {
-    if (_.isObject(provider)) {
+    if (_.isObjectLike(provider)) {
       options = provider;
       provider = 'object';
     }
@@ -111,7 +111,7 @@ export class Config extends EventEmitter {
     }
 
     /* object */
-    if (!_.isObject(values)) {
+    if (!_.isObjectLike(values)) {
       throw new TypeError();
     }
 
@@ -123,7 +123,7 @@ export class Config extends EventEmitter {
     });
 
     return Promise.all(
-      _.map(keys, pair => {
+      keys.map(pair => {
         return Promise.all(
           providers.map(a => a.set(pair.path, pair.value))
         );
