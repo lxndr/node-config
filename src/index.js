@@ -40,7 +40,8 @@ class ConfigProxy {
 export class Config extends EventEmitter {
   constructor() {
     super();
-    this._providers = [];
+    this.providers = [];
+    this.values = {};
   }
 
   /**
@@ -77,7 +78,7 @@ export class Config extends EventEmitter {
     }
 
     provider.mutable = options && options.mutable && _.isFunction(provider.set);
-    this._providers.push(provider);
+    this.providers.push(provider);
     return this;
   }
 
@@ -86,9 +87,10 @@ export class Config extends EventEmitter {
    */
   reload() {
     return Promise.all(
-      this._providers.map(a => a.load())
+      this.providers.map(a => a.load())
     ).then(configs => {
-      _.merge(this, ...configs);
+      this.values = {};
+      util.merge(this.values, configs);
     });
   }
 
@@ -96,7 +98,7 @@ export class Config extends EventEmitter {
    * @return {any} value.
    */
   get(key, def) {
-    return _.get(this, key, def);
+    return _.get(this.values, key, def);
   }
 
   /**
@@ -115,10 +117,10 @@ export class Config extends EventEmitter {
       throw new TypeError();
     }
 
-    const providers = _.filter(this._providers, {mutable: true});
+    const providers = _.filter(this.providers, {mutable: true});
     const keys = [];
 
-    util.merge(this, values, (path, value) => {
+    util.merge(this.values, values, (path, value) => {
       keys.push({path, value});
     });
 
@@ -140,7 +142,7 @@ export class Config extends EventEmitter {
    */
   remove(key) {
     const path = _.toPath(key);
-    const list = _.filter(this._providers, {mutable: true});
+    const list = _.filter(this.providers, {mutable: true});
     return Promise.all(
       list.map(a => a.remove(path))
     );

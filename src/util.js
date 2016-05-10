@@ -25,7 +25,7 @@ function _merge(target, source, path, cb) {
  * @param {Object|Object[]} sources
  * @param {Function} cb
  */
-export function merge(target, sources, cb) {
+export function merge(target, sources, cb = () => {}) {
   if (!_.isArray(sources)) {
     sources = [sources];
   }
