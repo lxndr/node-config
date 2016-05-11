@@ -2,6 +2,8 @@ import _ from 'lodash';
 import {EventEmitter} from 'events';
 import * as util from './util';
 import {ConfigProvider} from './provider';
+import ObjectConfigProvider from './providers/object';
+import FunctionConfigProvider from './providers/function';
 
 const classes = {};
 
@@ -60,6 +62,11 @@ export class Config extends EventEmitter {
     if (_.isObjectLike(provider)) {
       options = provider;
       provider = 'object';
+    }
+
+    if (_.isFunction(provider)) {
+      options = {load: provider};
+      provider = 'function';
     }
 
     if (_.isString(provider)) {
@@ -160,4 +167,5 @@ export class Config extends EventEmitter {
 /*
  * Register built-in providers.
  */
-Config.register('object', require('./providers/object').default);
+Config.register('object', ObjectConfigProvider);
+Config.register('function', FunctionConfigProvider);
