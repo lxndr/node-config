@@ -1,5 +1,5 @@
 import {Config} from './config';
-import localStorage from './providers/localStorage';
+import LocalStorageConfigProvider from './providers/localStorage';
 export default Config;
 
-Config.register('localStorage', localStorage);
+Config.register('localStorage', LocalStorageConfigProvider);

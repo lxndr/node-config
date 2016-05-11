@@ -89,7 +89,7 @@ export class Config extends EventEmitter {
       this.providers.map(a => a.load())
     ).then(configs => {
       this.values = {};
-      util.merge(this.values, configs);
+      _.merge(this.values, ...configs);
     });
   }
 
@@ -161,4 +161,3 @@ export class Config extends EventEmitter {
  * Register built-in providers.
  */
 Config.register('object', require('./providers/object').default);
-

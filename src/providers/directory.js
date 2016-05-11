@@ -1,13 +1,13 @@
 import glob from 'glob';
 import _ from 'lodash';
 import {ConfigProvider} from '../provider';
-import {FileConfigProvider} from '../providers/file';
+import FileConfigProvider from '../providers/file';
 import jsonParser from '../parsers/json';
 
 export default class DirectoryConfigProvider extends ConfigProvider {
   constructor(options = {}) {
     super();
-    this.path = options.path || 'config';
+    this.path = options.path || 'config/**/*.json';
     this.parser = options.parser || jsonParser;
   }
 
@@ -20,7 +20,7 @@ export default class DirectoryConfigProvider extends ConfigProvider {
         }
 
         Promise.all(
-          _.map(files, file => {
+          files.map(file => {
             const provider = new FileConfigProvider({
               path: file,
               parser: this.parser
@@ -28,7 +28,9 @@ export default class DirectoryConfigProvider extends ConfigProvider {
 
             return provider.load();
           })
-        ).then(resolve, reject);
+        ).then(values => {
+          resolve(_.merge({}, ...values));
+        }, reject);
       });
     });
   }
