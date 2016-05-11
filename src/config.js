@@ -1,4 +1,3 @@
-import os from 'os';
 import _ from 'lodash';
 import {EventEmitter} from 'events';
 import * as util from './util';
@@ -162,10 +161,4 @@ export class Config extends EventEmitter {
  * Register built-in providers.
  */
 Config.register('object', require('./providers/object').default);
-if (os.platform() === 'browser') {
-  Config.register('localStorage', require('./providers/localStorage').default);
-} else {
-  Config.register('env', require('./providers/env').default);
-  Config.register('file', require('./providers/file').default);
-  Config.register('directory', require('./providers/directory').default);
-}
+

@@ -1,23 +1,6 @@
 'use strict';
 
 module.exports = function (grunt) {
-  function formatBuiltinProviders(platform) {
-    const list = {
-      node: [
-        'object',
-        'env',
-        'directory',
-        'file'
-      ],
-      browser: [
-        'object',
-        'localStorage'
-      ]
-    };
-
-    return list[platform].map(x => `Config.register('object', require('./providers/${x}').default);\n`).join('');
-  }
-
   require('load-grunt-tasks')(grunt);
 
   grunt.initConfig({
@@ -48,7 +31,11 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: 'src',
-          src: '**/*.js',
+          src: [
+            '**/*.js',
+            '!providers/localStorage.js',
+            '!index.browser.js'
+          ],
           dest: 'build/lib'
         }]
       },
@@ -62,7 +49,7 @@ module.exports = function (grunt) {
     browserify: {
       dist: {
         files: {
-          'build/dist/config.js': ['src/index.js']
+          'build/dist/config.js': ['src/index.browser.js']
         }
       },
       options: {
@@ -73,7 +60,8 @@ module.exports = function (grunt) {
           ['babelify', {
             presets: ['es2015'],
             plugins: [
-              'lodash'
+              'lodash',
+              'transform-runtime'
             ]
           }]
         ]
