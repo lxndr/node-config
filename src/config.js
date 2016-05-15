@@ -110,10 +110,12 @@ export class Config extends EventEmitter {
   /**
    * @return {Promise}
    */
-  set(values) {
+  set(...args) {
+    let [values] = args;
+
     /* key, value */
-    if (arguments.length === 2 && (_.isString(values) || _.isArray(values))) {
-      const [key, value] = arguments;
+    if (args.length === 2 && (_.isString(values) || _.isArray(values))) {
+      const [key, value] = args;
       values = {};
       _.set(values, key, value);
     }

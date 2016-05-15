@@ -9,3 +9,12 @@ rules:
     - 2
     -
       SwitchCase: 1
+
+  prefer-reflect:
+    - error
+    -
+      exceptions:
+        - delete
+
+  prefer-rest-params: error
+  prefer-spread: error
