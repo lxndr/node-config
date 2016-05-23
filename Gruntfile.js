@@ -12,6 +12,12 @@ module.exports = function (grunt) {
       files: 'src/**/*.js'
     },
 
+    mochaTest: {
+      test: {
+        src: ['tests/**/*.js']
+      }
+    },
+
     copy: {
       dist: {
         files: [{
@@ -91,4 +97,5 @@ module.exports = function (grunt) {
   ]);
 
   grunt.registerTask('lint', ['eslint']);
+  grunt.registerTask('test', ['mochaTest']);
 };
