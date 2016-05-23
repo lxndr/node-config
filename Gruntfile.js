@@ -5,7 +5,8 @@ module.exports = function (grunt) {
 
   grunt.initConfig({
     clean: [
-      'build'
+      'dist',
+      'lib'
     ],
 
     eslint: {
@@ -14,21 +15,7 @@ module.exports = function (grunt) {
 
     mochaTest: {
       test: {
-        src: ['tests/**/*.js']
-      }
-    },
-
-    copy: {
-      dist: {
-        files: [{
-          expand: true,
-          dest: 'build',
-          src: [
-            'LICENSE',
-            'README.md',
-            'package.json'
-          ]
-        }]
+        src: 'tests/*.js'
       }
     },
 
@@ -42,7 +29,7 @@ module.exports = function (grunt) {
             '!providers/localStorage.js',
             '!index.browser.js'
           ],
-          dest: 'build/lib'
+          dest: 'lib'
         }]
       },
       options: {
@@ -55,7 +42,7 @@ module.exports = function (grunt) {
     browserify: {
       dist: {
         files: {
-          'build/dist/config.js': ['src/index.browser.js']
+          'dist/config.js': 'src/index.browser.js'
         }
       },
       options: {
@@ -77,7 +64,7 @@ module.exports = function (grunt) {
     uglify: {
       dist: {
         files: {
-          'build/dist/config.min.js': ['build/dist/config.js']
+          'dist/config.min.js': 'dist/config.js'
         }
       },
       options: {
@@ -90,7 +77,6 @@ module.exports = function (grunt) {
   });
 
   grunt.registerTask('default', [
-    'copy',
     'babel',
     'browserify',
     'uglify'
