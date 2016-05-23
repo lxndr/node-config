@@ -1,4 +1,4 @@
-const Config = require('../').default;
+const Config = require('../').Config;
 
 let config;
 
@@ -8,7 +8,7 @@ describe('Basics', () => {
   });
 
   it('should add from plain object', () => {
-    config.provider({
+    config.use({
       cpanel: {
         staffer: {
           id: 97,
@@ -20,7 +20,7 @@ describe('Basics', () => {
   });
 
   it('should add from file', () => {
-    config.provider('file', {
+    config.use('file', {
       path: 'tests/fixtures/config.json',
       mutable: true
     });

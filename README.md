@@ -7,36 +7,36 @@ Application configuration manager for Node.js and browsers.
 ```javascript
 const config = new Config()
   /* default values */
-  .provider({
+  .use({
     a: 1,
     b: [2, 3, true]
   })
   /* browser local storage */
-  .provider('localStorage', {
+  .use('localStorage', {
     mutable: true
   })
   /* JSON file */
-  .provider('file', {
+  .use('file', {
     path: './config.json'
   })
   /* YAML file */
-  .provider('file', {
+  .use('file', {
     path: './config.json',
     parser: 'yaml'
   })
   /* directory */
-  .provider('directory', {
+  .use('directory', {
     path: './config',
     parser: 'yaml' /* defaults to 'json' */
   });
 
-config.reload().catch(error => {
-  console.error(error.message);
+config.reload().catch(err => {
+  console.error(err.message);
 })
 ```
 
 ```javascript
-config.on('b', (value) => {
+config.on('b', value => {
   console.log(`Value 'b' changed to ${value}`);
 });
 
@@ -56,7 +56,7 @@ const cfg = config.of('b')
 import * as json5 from 'json5';
 
 const config = new Config()
-  .provider('file', {
+  .use('file', {
     path: './config.json5',
     parser: {
       parse(text) {
@@ -73,7 +73,7 @@ const config = new Config()
 **Custom provider:**
 
 ```javascript
-config.provider(new SequelizeConfigProvider({
+config.use(new SequelizeConfigProvider({
   model: 'param'
 }));
 ```
@@ -84,7 +84,7 @@ or
 /* register configuration provider class */
 config.register('seqelize', SequelizeConfigProvider);
 /* add configuration provider */
-config.provider('seqelize', {
+config.use('seqelize', {
   model: 'param'
 });
 

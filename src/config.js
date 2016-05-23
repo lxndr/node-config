@@ -54,11 +54,11 @@ export class Config extends EventEmitter {
   }
 
   /**
-   * Adds provider.
-   * @param {String|Object|ConfigProvider} provider
+   * Adds configuration source.
+   * @param {String|Object|Function|ConfigProvider} provider
    * @param {Object} [options]
    */
-  provider(provider, options) {
+  use(provider, options) {
     if (_.isObjectLike(provider)) {
       options = provider;
       provider = 'object';
