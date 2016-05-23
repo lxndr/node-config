@@ -1,4 +1,4 @@
-const Config = require('../build').default;
+const Config = require('../').default;
 
 let config;
 
