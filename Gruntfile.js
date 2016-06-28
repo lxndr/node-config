@@ -24,11 +24,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: 'src',
-          src: [
-            '**/*.js',
-            '!providers/localStorage.js',
-            '!index.browser.js'
-          ],
+          src: '**/*.js',
           dest: 'lib'
         }]
       },

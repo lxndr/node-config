@@ -3,6 +3,7 @@
   "version": "1.0.0-alpha.4",
   "description": "Configuration manager for Node.js and web applications",
   "main": "lib/index.node.js",
+  "browser": "lib/index.browser.js",
   "author": "lxndr",
   "license": "MIT",
   "repository": "lxndr/node-config",
@@ -30,6 +31,7 @@
     "mocha": "^2.5.1"
   },
   "dependencies": {
+    "eslint": "^2.11.1",
     "glob": "^7.0.3",
     "js-yaml": "^3.6.1",
     "lodash": "^4.13.0"
