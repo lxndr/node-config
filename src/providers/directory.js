@@ -1,4 +1,4 @@
-import glob from 'glob';
+import globby from 'globby';
 import _ from 'lodash';
 import {ConfigProvider} from '../provider';
 import FileConfigProvider from '../providers/file';
@@ -12,14 +12,9 @@ export default class DirectoryConfigProvider extends ConfigProvider {
   }
 
   load() {
-    return new Promise((resolve, reject) => {
-      glob(this.path, (err, files) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-
-        Promise.all(
+    return globby(this.path)
+      .then(files => {
+        return Promise.all(
           files.map(file => {
             const provider = new FileConfigProvider({
               path: file,
@@ -28,10 +23,10 @@ export default class DirectoryConfigProvider extends ConfigProvider {
 
             return provider.load();
           })
-        ).then(values => {
-          resolve(_.merge({}, ...values));
-        }, reject);
+        );
+      })
+      .then(values => {
+        return _.merge({}, ...values);
       });
-    });
   }
 }
