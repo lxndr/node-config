@@ -2,6 +2,19 @@
 
 Application configuration manager for Node.js and browsers.
 
+**API**
+
+new Config()
+
+    use(provider, options) -> this
+    reload() -> Primise
+    of(key) -> ConfigProxy
+    on(key, cb) -> this
+    get(key, default) -> any
+    set(key, value) -> this
+    persist()-> Promise
+
+
 **Basics:**
 
 ```javascript

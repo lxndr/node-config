@@ -5,7 +5,7 @@ import {ConfigProvider} from './provider';
 import ObjectConfigProvider from './providers/object';
 import FunctionConfigProvider from './providers/function';
 
-const classes = {};
+const providers = {};
 
 class ConfigProxy {
   constructor(root, path) {
@@ -50,7 +50,7 @@ export class Config extends EventEmitter {
    * @param {Class} klass - Class extending ConfigProvider.
    */
   static register(name, klass) {
-    classes[name] = klass;
+    providers[name] = klass;
   }
 
   /**
@@ -70,7 +70,7 @@ export class Config extends EventEmitter {
     }
 
     if (_.isString(provider)) {
-      const Class = classes[provider];
+      const Class = providers[provider];
 
       if (!Class) {
         throw new TypeError(`Provider class '${provider}' is unknown.`);
