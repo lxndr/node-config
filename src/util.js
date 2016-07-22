@@ -1,10 +1,21 @@
 import _ from 'lodash';
 
-function _merge(target, source, path, cb) {
-  if (target === source) {
-    return;
-  }
+function _walk(object, path, cb) {
+  _.each(object, (value, key) => {
+    const valuePath = path.concat([key]);
+    if (_.isObjectLike(value)) {
+      walk(value, valuePath, cb);
+    } else {
+      cb(valuePath, value);
+    }
+  });
+}
 
+export function walk(object, cb) {
+  _walk(object, [], cb);
+}
+
+function _merge(target, source, path, cb) {
   _.each(source, (value, key) => {
     const valuePath = path.concat([key]);
     if (_.isObjectLike(value)) {

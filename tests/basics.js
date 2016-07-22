@@ -4,7 +4,9 @@ let config;
 
 describe('Basics', () => {
   it('should create Config', () => {
-    config = new Config();
+    config = new Config({
+      enchanced: false
+    });
   });
 
   it('should add from plain object', () => {

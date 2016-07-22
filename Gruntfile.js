@@ -1,4 +1,5 @@
 'use strict';
+const webpack = require('webpack');
 
 module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
@@ -15,7 +16,11 @@ module.exports = function (grunt) {
 
     mochaTest: {
       test: {
-        src: 'tests/*.js'
+        src: 'tests/*.js',
+        options: {
+          reporter: 'spec',
+          require: 'tests/support/node'
+        }
       }
     },
 
@@ -35,24 +40,35 @@ module.exports = function (grunt) {
       }
     },
 
-    browserify: {
+    webpack: {
       dist: {
-        files: {
-          'dist/config.js': 'src/index.browser.js'
-        }
-      },
-      options: {
-        browserifyOptions: {
-          standalone: 'config'
+        entry: './src/index.browser.js',
+        output: {
+          path: 'dist',
+          filename: 'config.js',
+          libraryTarget: 'umd'
         },
-        transform: [
-          ['babelify', {
-            presets: ['es2015'],
-            plugins: [
-              'lodash',
-              'transform-runtime'
-            ]
+        progress: true,
+        stats: {
+          errorDetails: true
+        },
+        module: {
+          loaders: [{
+            test: /\.js$/,
+            exclude: /(node_modules|bower_components)/,
+            loader: 'babel',
+            query: {
+              presets: ['es2015'],
+              plugins: [
+                'lodash',
+                'transform-runtime'
+              ]
+            }
           }]
+        },
+        plugins: [
+          new webpack.NoErrorsPlugin(),
+          new webpack.optimize.DedupePlugin()
         ]
       }
     },
@@ -74,7 +90,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('default', [
     'babel',
-    'browserify',
+    'webpack',
     'uglify'
   ]);
 

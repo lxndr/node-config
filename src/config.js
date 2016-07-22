@@ -5,7 +5,7 @@ import {ConfigProvider} from './provider';
 import ObjectConfigProvider from './providers/object';
 import FunctionConfigProvider from './providers/function';
 
-const providers = {};
+const classes = {};
 
 class ConfigProxy {
   constructor(root, path) {
@@ -39,10 +39,34 @@ class ConfigProxy {
  * Configuration class.
  */
 export class Config extends EventEmitter {
-  constructor() {
+  constructor(options) {
     super();
     this.providers = [];
+    this.schema = {};
+    this.storedValues = {};
     this.values = {};
+
+    if (options.enchance === undefined) {
+      if (Proxy) {
+        options.enchance = true;
+      }
+    }
+
+    if (options.enchance) {
+      return new Proxy(this, {
+        get(target, property) {
+          return target.get(property);
+        },
+        set(target, property, value) {
+          target.set(property, value);
+          return true;
+        },
+        deleteProperty(target, property) {
+          target.remove(property);
+          return true;
+        }
+      });
+    }
   }
 
   /**
@@ -50,7 +74,7 @@ export class Config extends EventEmitter {
    * @param {Class} klass - Class extending ConfigProvider.
    */
   static register(name, klass) {
-    providers[name] = klass;
+    classes[name] = klass;
   }
 
   /**
@@ -70,7 +94,7 @@ export class Config extends EventEmitter {
     }
 
     if (_.isString(provider)) {
-      const Class = providers[provider];
+      const Class = classes[provider];
 
       if (!Class) {
         throw new TypeError(`Provider class '${provider}' is unknown.`);
@@ -89,14 +113,31 @@ export class Config extends EventEmitter {
   }
 
   /**
+   * @returns this
+   */
+  schema(desc) {
+    _.assign(this.schema, desc);
+  }
+
+  /**
    * @returns Promise
    */
   reload() {
     return Promise.all(
       this.providers.map(a => a.load())
     ).then(configs => {
-      this.values = {};
-      _.merge(this.values, ...configs);
+      this.storedValues = {};
+      _.merge(this.storedValues, ...configs);
+      _.each(this.schema, (desc, key) => {
+        const value = _.get(this.storedValues, key);
+        if (desc.atomic === true && typeof value === 'string') {
+          _.set(key, JSON.parse(value));
+        }
+        if (desc.default !== undefined && value === undefined) {
+          _.set(key, desc.default);
+        }
+      });
+      this.values = _.cloneDeep(this.storedValues);
     });
   }
 
@@ -108,7 +149,7 @@ export class Config extends EventEmitter {
   }
 
   /**
-   * @return {Promise}
+   * @return this
    */
   set(...args) {
     let [values] = args;
@@ -125,24 +166,49 @@ export class Config extends EventEmitter {
       throw new TypeError();
     }
 
-    const providers = _.filter(this.providers, {mutable: true});
-    const keys = [];
-
     util.merge(this.values, values, (path, value) => {
-      keys.push({path, value});
+      super.emit(path.join('.'), value);
     });
 
-    return Promise.all(
-      keys.map(pair => {
-        return Promise.all(
-          providers.map(a => a.set(pair.path, pair.value))
-        );
-      })
-    ).then(() => {
-      keys.forEach(pair => {
-        super.emit(pair.path.join('.'), pair.value);
+    return this;
+  }
+
+  _findChanges(cb) {
+    /* TODO: this is very very simplified */
+
+    _.each(this.values, (key, value) => {
+      const otherValue = _.get(this.storedValues, key);
+      if (_.isEqual(value, otherValue)) {
+        cb(key, value);
+      }
+    });
+  }
+
+  persist() {
+    const providers = _.filter(this.providers, {mutable: true});
+    const changes = [];
+
+    if (providers.length === 0) {
+      return Promise.resolve();
+    }
+
+    this._findChanges((key, newValue) => {
+      util.walk(newValue, (path, value) => {
+        changes.push({path, value});
       });
     });
+
+    if (changes.length === 0) {
+      return Promise.resolve();
+    }
+
+    const promises = providers.map(provider => {
+      return changes.map(change => {
+        return provider.set(change.path, change.value);
+      });
+    });
+
+    return Promise.all(_.flatten(promises)).then(() => {});
   }
 
   /**
@@ -150,9 +216,9 @@ export class Config extends EventEmitter {
    */
   remove(key) {
     const path = _.toPath(key);
-    const list = _.filter(this.providers, {mutable: true});
+    const providers = _.filter(this.providers, {mutable: true});
     return Promise.all(
-      list.map(a => a.remove(path))
+      providers.map(a => a.remove(path))
     );
   }
 
