@@ -1,20 +1,9 @@
 extends: xo/esnext
 
 rules:
-  no-console:
-    - error
-
-  indent:
-    - error
-    - 2
-    -
-      SwitchCase: 1
-
-  prefer-reflect:
-    - error
-    -
-      exceptions:
-        - delete
-
-  prefer-rest-params: error
-  prefer-spread: error
+  no-console: [error]
+  indent: [error, 2, {SwitchCase: 1}]
+  prefer-reflect: [error]
+  prefer-rest-params: [error]
+  prefer-spread: [error]
+  max-lines: [error, {max: 300, skipBlankLines: true, skipComments: true}]

@@ -1,14 +1,8 @@
-const Config = require('../').Config;
-
-let config;
+const config = new Config({
+  enchaned: false
+});
 
 describe('Basics', () => {
-  it('should create Config', () => {
-    config = new Config({
-      enchanced: false
-    });
-  });
-
   it('should add from plain object', () => {
     config.use({
       cpanel: {
