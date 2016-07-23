@@ -1,6 +1,4 @@
-const config = new Config({
-  enchaned: false
-});
+const config = new Config();
 
 describe('Basics', () => {
   it('should add from plain object', () => {

@@ -1,6 +1,6 @@
 {
   "name": "@lxndr/config",
-  "version": "1.0.0-alpha.5",
+  "version": "1.0.0-alpha.6",
   "description": "Configuration manager for Node.js and web applications",
   "main": "lib/index.node.js",
   "browser": "lib/index.browser.js",
@@ -8,10 +8,9 @@
   "license": "MIT",
   "repository": "lxndr/node-config",
   "devDependencies": {
-    "babel-cli": "^6.11.4",
     "babel-eslint": "^6.1.2",
     "babel-loader": "^6.2.4",
-    "babel-plugin-lodash": "^3.2.5",
+    "babel-plugin-lodash": "^3.2.6",
     "babel-plugin-transform-runtime": "^6.9.0",
     "babel-preset-es2015": "^6.9.0",
     "chai": "^3.5.0",
@@ -22,7 +21,6 @@
     "grunt": "^1.0.1",
     "grunt-babel": "^6.0.0",
     "grunt-contrib-clean": "^1.0.0",
-    "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-uglify": "^2.0.0",
     "grunt-eslint": "^19.0.0",
     "grunt-mocha-test": "^0.12.7",
@@ -34,7 +32,7 @@
   },
   "dependencies": {
     "debug": "^2.2.0",
-    "globby": "^5.0.0",
+    "globby": "^6.0.0",
     "js-yaml": "^3.6.1",
     "lodash": "^4.13.1"
   },

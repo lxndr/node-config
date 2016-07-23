@@ -1,5 +1,5 @@
 const config = new Config({
-  enchanced: true
+  enchance: true
 });
 
 config.use({
@@ -18,6 +18,14 @@ before('reload config', () => {
 
 describe('Proxy', () => {
   it('get value', () => {
-    assert(config['staffer.id']).equals(97);
+    expect(config.cpanel.staffer.id).to.equal(97);
+  });
+
+  it('set value', () => {
+    config.cpanel.staffer.id = 100;
+  });
+
+  it('remove value', () => {
+    delete config.cpanel.staffer;
   });
 });
