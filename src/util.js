@@ -63,7 +63,10 @@ export function obj2arr(obj) {
   const ret = [];
 
   _.each(obj, (val, key) => {
-    ret[key] = val;
+    const idx = parseInt(key, 10);
+    if (typeof idx === 'number' && !isNaN(idx)) {
+      ret[idx] = val;
+    }
   });
 
   return ret;
