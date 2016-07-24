@@ -33,6 +33,14 @@ export class Config {
    * @param {Class} klass - Class extending ConfigProvider.
    */
   static register(name, klass) {
+    if (typeof name !== 'string') {
+      throw new TypeError('argument 1 has to be string');
+    }
+
+    if (!klass instanceof ConfigProvider) {
+      throw new TypeError('argument 2 has to be ConfigProvider');
+    }
+
     classes[name] = klass;
   }
 
