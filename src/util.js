@@ -68,3 +68,26 @@ export function obj2arr(obj) {
 
   return ret;
 }
+
+export function proxify(config) {
+  return new Proxy(config, {
+    get(target, property) {
+      if (property in target) {
+        return target[property];
+      }
+      return target.get(property);
+    },
+    set(target, property, value) {
+      if (property in target) {
+        target[property] = value;
+      } else {
+        target.set(property, value);
+      }
+      return true;
+    },
+    deleteProperty(target, property) {
+      target.remove(property);
+      return true;
+    }
+  });
+}

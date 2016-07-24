@@ -1,9 +1,10 @@
 import _ from 'lodash';
 import debug from 'debug';
-import * as util from './util';
-import {ConfigProvider} from './provider';
-import ObjectConfigProvider from './providers/object';
+import {ConfigNamespace} from './config-namespace';
 import FunctionConfigProvider from './providers/function';
+import ObjectConfigProvider from './providers/object';
+import {ConfigProvider} from './provider';
+import * as util from './util';
 
 const log = debug('config');
 const $schema = Symbol('schema');
@@ -11,38 +12,6 @@ const $providers = Symbol('providers');
 const $storedValues = Symbol('storedValues');
 const $values = Symbol('values');
 const classes = {};
-
-class ConfigProxy {
-  constructor(root, path) {
-    this.root = root;
-    this.path = _.toPath(path);
-  }
-
-  fullPath(key) {
-    return this.path.concat(_.toPath(key));
-  }
-
-  get(key, def) {
-    return this.root.get(this.fullPath(key), def);
-  }
-
-  set(key, values) {
-    if (_.isObjectLike(key)) {
-      values = key;
-      key = '';
-    }
-
-    return this.root.set(this.fullPath(key), values);
-  }
-
-  remove(key) {
-    return this.root.remove(this.fullPath(key));
-  }
-
-  persist() {
-    this.root.persist();
-  }
-}
 
 /**
  * Configuration class.
@@ -55,26 +24,7 @@ export class Config {
     this[$values] = {};
 
     if (options.enchance === true) {
-      return new Proxy(this, {
-        get(target, property) {
-          if (property in target) {
-            return target[property];
-          }
-          return target.get(property);
-        },
-        set(target, property, value) {
-          if (property in target) {
-            target[property] = value;
-          } else {
-            target.set(property, value);
-          }
-          return true;
-        },
-        deleteProperty(target, property) {
-          target.remove(property);
-          return true;
-        }
-      });
+      return util.proxify(this);
     }
   }
 
@@ -304,7 +254,7 @@ export class Config {
    * @return {ConfigProxy}
    */
   of(path) {
-    return new ConfigProxy(this, path);
+    return new ConfigNamespace(this, _.toPath(path));
   }
 }
 
