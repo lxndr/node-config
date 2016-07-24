@@ -8,11 +8,10 @@ new Config()
 
     use(provider, options) -> this
     reload() -> Primise
+    persist()-> Promise
     of(key) -> ConfigProxy
-    on(key, cb) -> this
     get(key, default) -> any
     set(key, value) -> this
-    persist()-> Promise
 
 
 **Basics:**
@@ -49,10 +48,6 @@ config.reload().catch(err => {
 ```
 
 ```javascript
-config.on('b', value => {
-  console.log(`Value 'b' changed to ${value}`);
-});
-
 const b = config.get('b');
 
 config.set('b[2]', false);

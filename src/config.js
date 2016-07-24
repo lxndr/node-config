@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import debug from 'debug';
-import {EventEmitter} from 'events';
 import * as util from './util';
 import {ConfigProvider} from './provider';
 import ObjectConfigProvider from './providers/object';
@@ -48,9 +47,8 @@ class ConfigProxy {
 /**
  * Configuration class.
  */
-export class Config extends EventEmitter {
+export class Config {
   constructor(options = {}) {
-    super();
     this[$providers] = [];
     this[$schema] = [];
     this[$storedValues] = {};
@@ -204,10 +202,6 @@ export class Config extends EventEmitter {
     if (!_.isObjectLike(values)) {
       throw new TypeError();
     }
-
-    util.merge(this[$values], values, (path, value) => {
-      super.emit(path.join('.'), value);
-    });
 
     return this;
   }
