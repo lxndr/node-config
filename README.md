@@ -1,56 +1,147 @@
-[![license](https://img.shields.io/github/license/lxndr/node-config.svg?style=flat)](https://tldrlegal.com/license/mit-license) [![dependencies status](https://img.shields.io/david/lxndr/node-config.svg?style=flat)](https://david-dm.org/lxndr/node-config) [![devDependencies status](https://img.shields.io/david/dev/lxndr/node-config.svg?style=flat)](https://david-dm.org/lxndr/node-config#info=devDependencies)
+[![license](https://img.shields.io/github/license/lxndr/node-config.svg?style=flat)](https://tldrlegal.com/license/mit-license)
+[![dependencies status](https://img.shields.io/david/lxndr/node-config.svg?style=flat)](https://david-dm.org/lxndr/node-config)
+[![devDependencies status](https://img.shields.io/david/dev/lxndr/node-config.svg?style=flat)](https://david-dm.org/lxndr/node-config#info=devDependencies)
 
 Application configuration manager for Node.js and browsers.
 
 **API**
 
-new Config()
-
-    use(provider, options) -> this
-    reload() -> Primise
-    persist()-> Promise
-    of(key) -> ConfigProxy
-    get(key, default) -> any
-    set(key, value) -> this
-
-
-**Basics:**
-
 ```javascript
-const config = new Config()
-  /* default values */
-  .use({
-    a: 1,
-    b: [2, 3, true]
-  })
-  /* browser local storage */
-  .use('localStorage', {
-    mutable: true
-  })
-  /* JSON file */
-  .use('file', {
-    path: './config.json'
-  })
-  /* YAML file */
-  .use('file', {
-    path: './config.json',
-    parser: 'yaml'
-  })
-  /* directory */
-  .use('directory', {
-    path: './config',
-    parser: 'yaml' /* defaults to 'json' */
-  });
-
-config.reload().catch(err => {
-  console.error(err.message);
-})
+new Config([options])
+  /* static methods */
+  register(name, klass) -> void
+  /* instance methods */
+  use(provider, [options]) -> this
+  reload() -> Primise
+  persist() -> Promise
+  of(key) -> ConfigProxy
+  get(key, [defaultValue]) -> any
+  set(key, value) -> this
+  set(value) -> this
 ```
 
-```javascript
-const b = config.get('b');
+**Usage:**
 
-config.set('b[2]', false);
+```javascript
+const config = new Config({
+  enchance: true
+});
+```
+
+Options:
+  - *enchance* (= false) - Forces Config constructor to create proxified version of itself. See below.
+
+**Schema:**
+
+Schema allows you to define what to do with specific parts of your configuration.
+
+This is completely optional and can be defined at any time. Schema mostly used when *reload()* and *persist()* are called, and does not validate values.
+
+```javascript
+/* only define default value */
+config.schema({
+  'user.name': 'guest',
+  'user.role': ['guest']
+});
+
+/* more complex example */
+config.schema({
+  'user.role': {
+    type: 'array',
+    default: ['guest'],
+    stringified: true
+  }
+});
+```
+
+*NOTE: Array ['guest'] is just an example, you can default to any type of value.*
+
+**Providers:**
+
+Providers define places and the ways the values for configuration are loaded and stored.
+
+```javascript
+/* static object (the object is cloned) */
+config.use({
+  a: 1,
+  b: [2, 3, true]
+});
+
+/* registers a function that called every configuration reloaded */
+config.use(function () {
+  return Promise.resolve({
+    user: {
+      name: 'guest',
+      role: ['guest']
+    }
+  });
+});
+
+/* browser local storage */
+config.use('localStorage', {
+  mutable: true
+});
+
+/* JSON file */
+config.use('file', {
+  path: './config.json'
+});
+
+/* YAML file */
+config.use('file', {
+  path: './config.yaml',
+  parser: 'yaml'
+});
+
+/* directory */
+config.use('directory', {
+  path: './config',
+  parser: 'yaml' /* defaults to 'json' */
+});
+```
+
+You have to call *reload()* after calling *use()*.
+
+**Getting**
+
+```javascript
+/* simple get */
+const v = config.get('user.roles');
+const v = config.get('user.roles[0]');
+/* with default value */
+const v = config.get('user.roles', ['guest']);
+/* in enchanced mode */
+const v = config['user.roles'];
+/* or even */
+const v = config.user.roles;
+```
+
+**Setting**
+
+```javascript
+/* simple set */
+config.set('user.name', 'admin');
+config.set('user.roles[0]', 'admin');
+/* in enchanced mode */
+const v = config['user.roles[0]'] = 'admin';
+```
+
+**Loading and saving**
+
+You have to call it every time you add providers.
+
+```javascript
+config.reload().catch(err => {
+  console.error(err.message);
+});
+```
+
+You have to call it every time you change configuration and what to save it.
+
+```javascript
+config.persist().catch(err => {
+  console.error(err.message);
+});
 ```
 
 **Namespaces:**
