@@ -102,7 +102,7 @@ config.use('directory', {
 
 You have to call *reload()* after calling *use()*.
 
-**Getting**
+**Getting:**
 
 ```javascript
 /* simple get */
@@ -116,7 +116,7 @@ const v = config['user.roles'];
 const v = config.user.roles;
 ```
 
-**Setting**
+**Setting:**
 
 ```javascript
 /* simple set */
@@ -126,7 +126,7 @@ config.set('user.roles[0]', 'admin');
 const v = config['user.roles[0]'] = 'admin';
 ```
 
-**Loading and saving**
+**Loading and saving:**
 
 You have to call it every time you add providers.
 
