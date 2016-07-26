@@ -140,6 +140,10 @@ export class Config {
    * @return {any} value.
    */
   get(key, def) {
+    if (!key) {
+      return this[$values];
+    }
+
     return _.get(this[$values], key, def);
   }
 

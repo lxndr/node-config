@@ -15,9 +15,8 @@ new Config([options])
   reload() -> Primise
   persist() -> Promise
   of(key) -> ConfigProxy
-  get(key, [defaultValue]) -> any
-  set(key, value) -> this
-  set(value) -> this
+  get([key, [defaultValue]]) -> any
+  set([key], value) -> this
 ```
 
 **Usage:**

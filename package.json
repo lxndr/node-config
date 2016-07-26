@@ -1,6 +1,6 @@
 {
   "name": "@lxndr/config",
-  "version": "1.0.0-alpha.6",
+  "version": "1.0.0-alpha.7",
   "description": "Configuration manager for Node.js and web applications",
   "main": "lib/index.node.js",
   "browser": "lib/index.browser.js",
@@ -34,7 +34,7 @@
     "debug": "^2.2.0",
     "globby": "^6.0.0",
     "js-yaml": "^3.6.1",
-    "lodash": "^4.13.1"
+    "lodash": "^4.14.0"
   },
   "scripts": {
     "prepublish": "grunt clean && grunt",
