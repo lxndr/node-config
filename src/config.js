@@ -165,6 +165,8 @@ export class Config {
       throw new TypeError();
     }
 
+    util.merge(this[$values], values);
+
     return this;
   }
 
