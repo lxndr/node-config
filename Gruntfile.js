@@ -30,26 +30,35 @@ module.exports = function (grunt) {
           cwd: 'src',
           src: '**/*.js',
           dest: 'lib'
-        }]
-      },
-      options: {
-        plugins: [
-          'transform-es2015-modules-commonjs'
-        ]
+        }],
+        options: {
+          plugins: [
+            'transform-es2015-modules-commonjs',
+            ['transform-runtime', {
+              polyfill: false
+            }]
+          ]
+        }
       }
     },
 
     webpack: {
-      dist: {
+      options: {
+        progress: true,
+        stats: {
+          errorDetails: true
+        },
+        plugins: [
+          new webpack.NoErrorsPlugin(),
+          new webpack.optimize.DedupePlugin()
+        ]
+      },
+      es5: {
         entry: './src/index.browser.js',
         output: {
           path: 'dist',
           filename: 'config.js',
           libraryTarget: 'umd'
-        },
-        progress: true,
-        stats: {
-          errorDetails: true
         },
         module: {
           loaders: [{
@@ -59,16 +68,11 @@ module.exports = function (grunt) {
             query: {
               presets: ['es2015'],
               plugins: [
-                'lodash',
-                'transform-runtime'
+                'lodash'
               ]
             }
           }]
-        },
-        plugins: [
-          new webpack.NoErrorsPlugin(),
-          new webpack.optimize.DedupePlugin()
-        ]
+        }
       }
     },
 
@@ -88,6 +92,7 @@ module.exports = function (grunt) {
   });
 
   grunt.registerTask('default', [
+    'clean',
     'babel',
     'webpack',
     'uglify'
