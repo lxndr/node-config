@@ -1,6 +1,6 @@
 {
   "name": "@lxndr/config",
-  "version": "1.0.0-alpha.8",
+  "version": "1.0.0",
   "description": "Configuration manager for Node.js and web applications",
   "main": "lib/index.node.js",
   "browser": "lib/index.browser.js",
@@ -26,13 +26,14 @@
     "grunt-mocha-test": "^0.12.7",
     "grunt-webpack": "^1.0.14",
     "load-grunt-tasks": "^3.5.0",
-    "mocha": "^3.0.0",
+    "mocha": "^3.0.1",
     "webpack": "^1.13.1",
     "webpack-dev-server": "^1.14.1"
   },
   "dependencies": {
     "babel-runtime": "^6.11.6",
     "debug": "^2.2.0",
+    "deep-diff": "^0.3.4",
     "globby": "^6.0.0",
     "js-yaml": "^3.6.1",
     "lodash": "^4.14.1"

@@ -25,16 +25,19 @@ describe('Basics', () => {
   });
 
   it('should set values', () => {
-    return config.set({
+    config.set({
       cpanel: {
         staffer: {
           id: 100,
           name: 'ugt;i'
         }
       },
-      oth: {
-        ioi: 9
-      }
+      oth: [1, 5, {foo: true}],
+      arr: []
     });
+  });
+
+  it('persist', () => {
+    return config.persist();
   });
 });

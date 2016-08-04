@@ -1,30 +1,41 @@
 import _ from 'lodash';
+import {observableDiff} from 'deep-diff';
 
-function _walk(object, path, cb) {
+function _walk(object, path, valFn, objFn) {
   _.each(object, (value, key) => {
     const valuePath = path.concat([key]);
-    if (_.isObjectLike(value)) {
-      _walk(value, valuePath, cb);
+    if (_.isPlainObject(value) || _.isArray(value)) {
+      objFn(valuePath, value);
+      _walk(value, valuePath, valFn);
     } else {
-      cb(valuePath, value);
+      valFn(valuePath, value, object);
     }
   });
 }
 
-export function walk(object, cb) {
-  _walk(object, [], cb);
+export function walk(object, valFn, objFn) {
+  if (!objFn) {
+    objFn = () => {};
+  }
+
+  _walk(object, [], valFn, objFn);
 }
 
 function _merge(target, source, path, cb) {
   _.each(source, (value, key) => {
     const valuePath = path.concat([key]);
-    if (_.isObjectLike(value)) {
-      if (_.isObject(value) && !_.isObject(target[key])) {
+    if (_.isPlainObject(value)) {
+      if (!_.isObjectLike(target[key])) {
         target[key] = {};
-      } else if (_.isArray(value) && !_.isArray(target[key])) {
+      }
+      _merge(target[key], value, valuePath, cb);
+/*
+    } else if (_.isArray(value)) {
+      if (!_.isArray(target[key])) {
         target[key] = [];
       }
       _merge(target[key], value, valuePath, cb);
+*/
     } else {
       cb(valuePath, value);
       target[key] = value;
@@ -38,14 +49,62 @@ function _merge(target, source, path, cb) {
  * @param {Object|Object[]} sources
  * @param {Function} cb
  */
-export function merge(target, sources, cb = () => {}) {
+export function merge(target, sources, cb) {
   if (!_.isArray(sources)) {
     sources = [sources];
+  }
+
+  if (!cb) {
+    cb = () => {};
   }
 
   _.each(sources, source => {
     _merge(target, source, [], cb);
   });
+}
+
+/**
+ *
+ */
+export function diff(oldObject, newObject) {
+  const changed = [];
+  const removed = [];
+
+  observableDiff(oldObject, newObject, item => {
+    if (item.kind === 'N' || item.kind === 'E') {
+      if (_.isPlainObject(item.rhs)) {
+        walk(item.rhs, (valuePath, value) => {
+          const path = [item.path].concat(valuePath);
+          changed.push({path, value});
+        });
+      } else {
+        changed.push({path: item.path, value: item.rhs});
+      }
+    } else if (item.kind === 'D') {
+      removed.push(item.path);
+    } else if (item.kind === 'A') {
+      item = {
+        kind: item.item.kind,
+        path: item.path.concat(item.index),
+        rhs: item.item.rhs
+      };
+
+      if (item.kind === 'N' || item.kind === 'E') {
+        if (_.isPlainObject(item.rhs)) {
+          walk(item.rhs, (valuePath, value) => {
+            const path = [item.path].concat(valuePath);
+            changed.push({path, value});
+          });
+        } else {
+          changed.push({path: item.path, value: item.rhs});
+        }
+      } else if (item.kind === 'D') {
+        removed.push(item.path);
+      }
+    }
+  });
+
+  return {changed, removed};
 }
 
 /**

@@ -29,6 +29,7 @@ export class Config {
   }
 
   /**
+   * Register configuration provider class under a name.
    * @param {String} name - Provider class name.
    * @param {Class} klass - Class extending ConfigProvider.
    */
@@ -170,54 +171,17 @@ export class Config {
     return this;
   }
 
-  _diffObject(oldObject, newObject, cbs) {
-    const oldKeys = _.keys(oldObject);
-    const newKeys = _.keys(newObject);
-
-    _.difference(oldKeys, newKeys).forEach(key => {
-      cbs.delFn(key);
-    });
-
-    _.difference(newKeys, oldKeys).forEach(key => {
-      cbs.newFn(key, newObject[key]);
-    });
-
-    _.intersection(oldKeys, newKeys).forEach(key => {
-      if (!_.isEqual(oldObject[key], newObject[key])) {
-        cbs.changeFn(key, newObject[key]);
-      }
-    });
-  }
-
   /**
    * @returns {Primise}
    */
   persist() {
     const providers = _.filter(this[$providers], {mutable: true});
-    const changed = [];
-    const removed = [];
 
     if (providers.length === 0) {
       return Promise.resolve();
     }
 
-    this._diffObject(this[$storedValues], this[$values], {
-      newFn(rootPath, newValue) {
-        util.walk(newValue, (valuePath, value) => {
-          const path = [rootPath].concat(valuePath);
-          changed.push({path, value});
-        });
-      },
-      changeFn(rootPath, newValue) {
-        util.walk(newValue, (valuePath, value) => {
-          const path = [rootPath].concat(valuePath);
-          changed.push({path, value});
-        });
-      },
-      delFn(rootPath) {
-        removed.push([rootPath]);
-      }
-    });
+    let {changed, removed} = util.diff(this[$storedValues], this[$values]);
 
     _.filter(this[$schema], {stringified: true}).forEach(schema => {
       if (_.find(changed, change => util.startsWith(change.path, schema.path))) {
@@ -226,7 +190,17 @@ export class Config {
         removed.push(schema.path);
         changed.push({path: schema.path, value: JSON.stringify(value)});
       }
+
+      if (_.find(removed, path => util.startsWith(path, schema.path))) {
+        const value = this.get(schema.path);
+        _.remove(removed, path => util.startsWith(path, schema.path));
+        removed.push(schema.path);
+        changed.push({path: schema.path, value: JSON.stringify(value)});
+      }
     });
+
+    changed = _.uniqBy(changed, 'path');
+    removed = _.uniq(removed);
 
     return Promise.resolve()
       .then(() => {
