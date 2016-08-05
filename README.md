@@ -78,7 +78,7 @@ config.use(function () {
 
 /* browser local storage */
 config.use('localStorage', {
-  mutable: true
+  writable: true
 });
 
 /* JSON file */

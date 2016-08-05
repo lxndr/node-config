@@ -23,7 +23,7 @@ export class Config {
     this[$storedValues] = {};
     this[$values] = {};
 
-    if (options.enchance === true) {
+    if (options.enchanced === true) {
       return util.proxify(this);
     }
   }
@@ -75,7 +75,7 @@ export class Config {
       throw new TypeError();
     }
 
-    provider.mutable = options && options.mutable && _.isFunction(provider.set);
+    provider.writable = options && options.writable && _.isFunction(provider.set);
     this[$providers].push(provider);
     return this;
   }
@@ -175,7 +175,7 @@ export class Config {
    * @returns {Primise}
    */
   persist() {
-    const providers = _.filter(this[$providers], {mutable: true});
+    const providers = _.filter(this[$providers], {writable: true});
 
     if (providers.length === 0) {
       return Promise.resolve();
