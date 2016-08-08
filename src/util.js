@@ -1,11 +1,10 @@
 import _ from 'lodash';
 import {observableDiff} from 'deep-diff';
 
-function _walk(object, path, valFn, objFn) {
+function _walk(object, path, valFn) {
   _.each(object, (value, key) => {
     const valuePath = path.concat([key]);
     if (_.isPlainObject(value) || _.isArray(value)) {
-      objFn(valuePath, value);
       _walk(value, valuePath, valFn);
     } else {
       valFn(valuePath, value, object);
@@ -13,12 +12,8 @@ function _walk(object, path, valFn, objFn) {
   });
 }
 
-export function walk(object, valFn, objFn) {
-  if (!objFn) {
-    objFn = () => {};
-  }
-
-  _walk(object, [], valFn, objFn);
+export function walk(object, valFn) {
+  _walk(object, [], valFn);
 }
 
 function _merge(target, source, path, cb) {
@@ -133,6 +128,12 @@ export function obj2arr(obj) {
 
 export function proxify(config) {
   return new Proxy(config, {
+    has(target, property) {
+      if (property in target) {
+        return target[property];
+      }
+      return target.get(property) !== undefined;
+    },
     get(target, property) {
       if (property in target) {
         return target[property];

@@ -1,12 +1,18 @@
 import _ from 'lodash';
+import * as util from './util';
 
 const $config = Symbol('config');
 const $path = Symbol('path');
+const $enchanced = Symbol.for('enchanced');
 
 export class ConfigNamespace {
   constructor(config, path) {
     this[$config] = config;
     this[$path] = path;
+
+    if (config[$enchanced]) {
+      return util.proxify(this);
+    }
   }
 
   _fullPath(key) {

@@ -11,6 +11,7 @@ const $schema = Symbol('schema');
 const $providers = Symbol('providers');
 const $storedValues = Symbol('storedValues');
 const $values = Symbol('values');
+const $enchanced = Symbol.for('enchanced');
 const classes = {};
 
 /**
@@ -22,8 +23,9 @@ export class Config {
     this[$schema] = [];
     this[$storedValues] = {};
     this[$values] = {};
+    this[$enchanced] = options.enchanced === true;
 
-    if (options.enchanced === true) {
+    if (this[$enchanced]) {
       return util.proxify(this);
     }
   }
