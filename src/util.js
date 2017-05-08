@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import {observableDiff} from 'deep-diff';
+import deepDiff from 'deep-diff';
 
 function _walk(object, path, valFn) {
   _.each(object, (value, key) => {
@@ -65,7 +65,7 @@ export function diff(oldObject, newObject) {
   const changed = [];
   const removed = [];
 
-  observableDiff(oldObject, newObject, item => {
+  deepDiff.observableDiff(oldObject, newObject, item => {
     if (item.kind === 'N' || item.kind === 'E') {
       if (_.isPlainObject(item.rhs)) {
         walk(item.rhs, (valuePath, value) => {

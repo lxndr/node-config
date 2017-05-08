@@ -1,5 +1,5 @@
 'use strict';
-const webpack = require('webpack');
+const path = require('path');
 
 module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
@@ -43,33 +43,29 @@ module.exports = function (grunt) {
     },
 
     webpack: {
-      options: {
-        progress: true,
-        stats: {
-          errorDetails: true
-        },
-        plugins: [
-          new webpack.NoErrorsPlugin(),
-          new webpack.optimize.DedupePlugin()
-        ]
-      },
       es5: {
-        entry: './src/index.browser.js',
+        entry: path.resolve(__dirname, 'src/index.browser.js'),
         output: {
-          path: 'dist',
+          path: path.resolve(__dirname, 'dist'),
           filename: 'config.js',
           libraryTarget: 'umd'
         },
         module: {
-          loaders: [{
+          rules: [{
             test: /\.js$/,
-            exclude: /(node_modules|bower_components)/,
-            loader: 'babel',
-            query: {
-              presets: ['es2015'],
-              plugins: [
-                'lodash'
-              ]
+            exclude: [
+              path.resolve(__dirname, 'node_modules')
+            ],
+            use: {
+              loader: 'babel-loader',
+              options: {
+                babelrc: false,
+                compact: false,
+                presets: ['es2015'],
+                plugins: [
+                  require('babel-plugin-lodash')
+                ]
+              }
             }
           }]
         }
