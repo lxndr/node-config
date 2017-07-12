@@ -12,6 +12,7 @@ new Config([options])
   register(name, klass) -> void
   /* instance methods */
   use(provider, [options]) -> this
+  reset() -> void
   reload() -> Primise
   persist() -> Promise
   of(key) -> ConfigProxy

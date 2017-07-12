@@ -19,10 +19,9 @@ const classes = {};
  */
 export class Config {
   constructor(options = {}) {
-    this[$providers] = [];
     this[$schema] = [];
-    this[$storedValues] = {};
-    this[$values] = {};
+    this.reset();
+
     this[$enchanced] = options.enchanced === true;
 
     if (this[$enchanced]) {
@@ -40,7 +39,7 @@ export class Config {
       throw new TypeError('argument 1 has to be string');
     }
 
-    if (!klass instanceof ConfigProvider) {
+    if (!(klass.prototype instanceof ConfigProvider)) {
       throw new TypeError('argument 2 has to be ConfigProvider');
     }
 
@@ -120,6 +119,15 @@ export class Config {
     }
 
     _.set(values, schema.path, value);
+  }
+
+  /**
+   * Removes all providers and values.
+   */
+  reset() {
+    this[$providers] = [];
+    this[$storedValues] = {};
+    this[$values] = {};
   }
 
   /**
