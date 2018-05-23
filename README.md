@@ -1,4 +1,5 @@
 [![license](https://img.shields.io/github/license/lxndr/node-config.svg?style=flat)](https://tldrlegal.com/license/mit-license)
+[![build status](https://travis-ci.org/lxndr/node-config.svg?branch=master)](https://travis-ci.org/lxndr/node-config)
 [![dependencies status](https://img.shields.io/david/lxndr/node-config.svg?style=flat)](https://david-dm.org/lxndr/node-config)
 [![devDependencies status](https://img.shields.io/david/dev/lxndr/node-config.svg?style=flat)](https://david-dm.org/lxndr/node-config#info=devDependencies)
 
