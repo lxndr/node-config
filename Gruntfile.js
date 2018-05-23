@@ -50,6 +50,7 @@ module.exports = function (grunt) {
           filename: 'config.js',
           libraryTarget: 'umd'
         },
+        mode: 'production',
         module: {
           rules: [{
             test: /\.js$/,
