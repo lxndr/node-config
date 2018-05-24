@@ -32,10 +32,11 @@ module.exports = function (grunt) {
           dest: 'lib'
         }],
         options: {
-          plugins: [
-            'transform-es2015-modules-commonjs',
-            ['transform-runtime', {
-              polyfill: false
+          presets: [
+            ['env', {
+              target: {
+                node: 6
+              }
             }]
           ]
         }
@@ -50,6 +51,7 @@ module.exports = function (grunt) {
           filename: 'config.js',
           libraryTarget: 'umd'
         },
+        mode: 'production',
         module: {
           rules: [{
             test: /\.js$/,
