@@ -1,16 +1,15 @@
-'use strict';
 const path = require('path');
 
 module.exports = function (grunt) {
-  require('load-grunt-tasks')(grunt);
+  require('load-grunt-tasks')(grunt); // eslint-disable-line global-require
 
   grunt.initConfig({
     clean: {
-      files: ['dist', 'lib']
+      files: ['dist', 'lib'],
     },
 
     eslint: {
-      files: 'src/**/*.js'
+      files: 'src/**/*.js',
     },
 
     mochaTest: {
@@ -18,9 +17,9 @@ module.exports = function (grunt) {
         src: 'tests/*.js',
         options: {
           reporter: 'spec',
-          require: 'tests/support/node'
-        }
-      }
+          require: 'tests/support/node',
+        },
+      },
     },
 
     babel: {
@@ -29,18 +28,18 @@ module.exports = function (grunt) {
           expand: true,
           cwd: 'src',
           src: '**/*.js',
-          dest: 'lib'
+          dest: 'lib',
         }],
         options: {
           presets: [
             ['env', {
               target: {
-                node: 6
-              }
-            }]
-          ]
-        }
-      }
+                node: 6,
+              },
+            }],
+          ],
+        },
+      },
     },
 
     webpack: {
@@ -49,14 +48,14 @@ module.exports = function (grunt) {
         output: {
           path: path.resolve(__dirname, 'dist'),
           filename: 'config.js',
-          libraryTarget: 'umd'
+          libraryTarget: 'umd',
         },
         mode: 'production',
         module: {
           rules: [{
             test: /\.js$/,
             exclude: [
-              path.resolve(__dirname, 'node_modules')
+              path.resolve(__dirname, 'node_modules'),
             ],
             use: {
               loader: 'babel-loader',
@@ -65,35 +64,35 @@ module.exports = function (grunt) {
                 compact: false,
                 presets: ['es2015'],
                 plugins: [
-                  require('babel-plugin-lodash')
-                ]
-              }
-            }
-          }]
-        }
-      }
+                  'lodash',
+                ],
+              },
+            },
+          }],
+        },
+      },
     },
 
     uglify: {
       dist: {
         files: {
-          'dist/config.min.js': 'dist/config.js'
-        }
+          'dist/config.min.js': 'dist/config.js',
+        },
       },
       options: {
         screwIE8: true,
         compress: {
-          dead_code: true
-        }
-      }
-    }
+          dead_code: true,
+        },
+      },
+    },
   });
 
   grunt.registerTask('default', [
     'clean',
     'babel',
     'webpack',
-    'uglify'
+    'uglify',
   ]);
 
   grunt.registerTask('lint', ['eslint']);

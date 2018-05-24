@@ -5,5 +5,5 @@ export default {
 
   stringify(value) {
     return JSON.stringify(value, ' ', 2);
-  }
+  },
 };

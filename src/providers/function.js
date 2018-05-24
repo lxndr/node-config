@@ -1,4 +1,4 @@
-import {ConfigProvider} from '../provider';
+import { ConfigProvider } from '../provider';
 
 export default class FunctionConfigProvider extends ConfigProvider {
   constructor(options = {}) {

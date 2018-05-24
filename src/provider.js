@@ -1,7 +1,7 @@
 /**
  * @abstract
  */
-export class ConfigProvider {
+export default class ConfigProvider {
   constructor() {
     this.mutable = false;
   }

@@ -1,8 +1,8 @@
-import {Config} from './config';
+import Config from './config';
 import EnvConfigProvider from './providers/env';
 import FileConfigProvider from './providers/file';
 import DirectoryConfigProvider from './providers/directory';
-export {Config};
+
 export default Config;
 
 Config.register('env', EnvConfigProvider);

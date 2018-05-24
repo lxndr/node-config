@@ -2,7 +2,7 @@
 
 import _ from 'lodash';
 import * as util from '../util';
-import {ConfigProvider} from '../provider';
+import { ConfigProvider } from '../provider';
 
 export default class LocalStorageConfigProvider extends ConfigProvider {
   constructor(options = {}) {
@@ -37,19 +37,17 @@ export default class LocalStorageConfigProvider extends ConfigProvider {
 
   remove(path) {
     _.flow(
-      () => {
-        return _.transform(localStorage, (result, value, key) => {
-          if (util.startsWith(_.toPath(key), path)) {
-            result.push(key);
-          }
-        }, []);
-      },
+      () => _.transform(localStorage, (result, value, key) => {
+        if (util.startsWith(_.toPath(key), path)) {
+          result.push(key);
+        }
+      }, []),
 
       keys => {
         _.each(keys, key => {
           localStorage.removeItem(key);
         });
-      }
+      },
     )();
   }
 }

@@ -1,9 +1,9 @@
 import _ from 'lodash';
 import debug from 'debug';
-import {ConfigNamespace} from './config-namespace';
+import ConfigNamespace from './config-namespace';
 import FunctionConfigProvider from './providers/function';
 import ObjectConfigProvider from './providers/object';
-import {ConfigProvider} from './provider';
+import ConfigProvider from './provider';
 import * as util from './util';
 
 const log = debug('config');
@@ -17,7 +17,7 @@ const classes = {};
 /**
  * Configuration class.
  */
-export class Config {
+export default class Config {
   constructor(options = {}) {
     this[$schema] = [];
     this.reset();
@@ -58,7 +58,7 @@ export class Config {
     }
 
     if (_.isFunction(provider)) {
-      options = {load: provider};
+      options = { load: provider };
       provider = 'function';
     }
 
@@ -93,7 +93,7 @@ export class Config {
       const path = _.toPath(key);
 
       if (!_.isObject(schema)) {
-        schema = {default: schema};
+        schema = { default: schema };
       }
 
       schema.path = path;
@@ -134,9 +134,7 @@ export class Config {
    * @returns Promise
    */
   reload() {
-    return Promise.all(
-      this[$providers].map(a => a.load())
-    ).then(configs => {
+    return Promise.all(this[$providers].map(a => a.load())).then(configs => {
       this[$storedValues] = _.merge({}, ...configs);
 
       _.each(this[$schema], schema => {
@@ -185,27 +183,27 @@ export class Config {
    * @returns {Primise}
    */
   persist() {
-    const providers = _.filter(this[$providers], {writable: true});
+    const providers = _.filter(this[$providers], { writable: true });
 
     if (providers.length === 0) {
       return Promise.resolve();
     }
 
-    let {changed, removed} = util.diff(this[$storedValues], this[$values]);
+    let { changed, removed } = util.diff(this[$storedValues], this[$values]);
 
-    _.filter(this[$schema], {stringified: true}).forEach(schema => {
+    _.filter(this[$schema], { stringified: true }).forEach(schema => {
       if (_.find(changed, change => util.startsWith(change.path, schema.path))) {
         const value = this.get(schema.path);
         _.remove(changed, change => util.startsWith(change.path, schema.path));
         removed.push(schema.path);
-        changed.push({path: schema.path, value: JSON.stringify(value)});
+        changed.push({ path: schema.path, value: JSON.stringify(value) });
       }
 
       if (_.find(removed, path => util.startsWith(path, schema.path))) {
         const value = this.get(schema.path);
         _.remove(removed, path => util.startsWith(path, schema.path));
         removed.push(schema.path);
-        changed.push({path: schema.path, value: JSON.stringify(value)});
+        changed.push({ path: schema.path, value: JSON.stringify(value) });
       }
     });
 
@@ -214,22 +212,18 @@ export class Config {
 
     return Promise.resolve()
       .then(() => {
-        const promises = providers.map(provider => {
-          return removed.map(path => {
-            log(`remove '${path.join('.')}'`);
-            return provider.remove(path);
-          });
-        });
+        const promises = providers.map(provider => removed.map(path => {
+          log(`remove '${path.join('.')}'`);
+          return provider.remove(path);
+        }));
 
         return Promise.all(_.flatten(promises));
       })
       .then(() => {
-        const promises = providers.map(provider => {
-          return changed.map(change => {
-            log(`set '${change.path.join('.')}' = '${change.value}'`);
-            return provider.set(change.path, change.value);
-          });
-        });
+        const promises = providers.map(provider => changed.map(change => {
+          log(`set '${change.path.join('.')}' = '${change.value}'`);
+          return provider.set(change.path, change.value);
+        }));
 
         return Promise.all(_.flatten(promises));
       })

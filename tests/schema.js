@@ -7,8 +7,8 @@ describe('Schema', () => {
     config.schema({
       'sys.logging': {
         default: true,
-        atomic: true
-      }
+        atomic: true,
+      },
     });
   });
 });

@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import {ConfigProvider} from '../provider';
+import { ConfigProvider } from '../provider';
 
 export default class ObjectConfigProvider extends ConfigProvider {
   constructor(object) {

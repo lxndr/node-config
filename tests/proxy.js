@@ -1,5 +1,5 @@
 const config = new Config({
-  enchance: true
+  enchance: true,
 });
 
 config.use({
@@ -7,14 +7,12 @@ config.use({
     staffer: {
       id: 97,
       name: 'lxndr',
-      password: '12345'
-    }
-  }
+      password: '12345',
+    },
+  },
 });
 
-before('reload config', () => {
-  return config.reload();
-});
+before('reload config', () => config.reload());
 
 describe('Proxy', () => {
 /*

@@ -7,5 +7,5 @@ export default {
 
   stringify(value) {
     return yaml.safeDump(value);
-  }
+  },
 };

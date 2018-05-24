@@ -5,7 +5,7 @@ const $config = Symbol('config');
 const $path = Symbol('path');
 const $enchanced = Symbol.for('enchanced');
 
-export class ConfigNamespace {
+export default class ConfigNamespace {
   constructor(config, path) {
     this[$config] = config;
     this[$path] = path;

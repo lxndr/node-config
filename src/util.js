@@ -24,7 +24,7 @@ function _merge(target, source, path, cb) {
         target[key] = {};
       }
       _merge(target[key], value, valuePath, cb);
-/*
+      /*
     } else if (_.isArray(value)) {
       if (!_.isArray(target[key])) {
         target[key] = [];
@@ -70,10 +70,10 @@ export function diff(oldObject, newObject) {
       if (_.isPlainObject(item.rhs)) {
         walk(item.rhs, (valuePath, value) => {
           const path = [item.path].concat(valuePath);
-          changed.push({path, value});
+          changed.push({ path, value });
         });
       } else {
-        changed.push({path: item.path, value: item.rhs});
+        changed.push({ path: item.path, value: item.rhs });
       }
     } else if (item.kind === 'D') {
       removed.push(item.path);
@@ -81,17 +81,17 @@ export function diff(oldObject, newObject) {
       item = {
         kind: item.item.kind,
         path: item.path.concat(item.index),
-        rhs: item.item.rhs
+        rhs: item.item.rhs,
       };
 
       if (item.kind === 'N' || item.kind === 'E') {
         if (_.isPlainObject(item.rhs)) {
           walk(item.rhs, (valuePath, value) => {
             const path = [item.path].concat(valuePath);
-            changed.push({path, value});
+            changed.push({ path, value });
           });
         } else {
-          changed.push({path: item.path, value: item.rhs});
+          changed.push({ path: item.path, value: item.rhs });
         }
       } else if (item.kind === 'D') {
         removed.push(item.path);
@@ -99,7 +99,7 @@ export function diff(oldObject, newObject) {
     }
   });
 
-  return {changed, removed};
+  return { changed, removed };
 }
 
 /**
@@ -118,7 +118,7 @@ export function obj2arr(obj) {
 
   _.each(obj, (val, key) => {
     const idx = parseInt(key, 10);
-    if (typeof idx === 'number' && !isNaN(idx)) {
+    if (typeof idx === 'number' && !Number.isNaN(idx)) {
       ret[idx] = val;
     }
   });
@@ -151,6 +151,6 @@ export function proxify(config) {
     deleteProperty(target, property) {
       target.remove(property);
       return true;
-    }
+    },
   });
 }

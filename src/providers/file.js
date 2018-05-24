@@ -1,12 +1,12 @@
 import fs from 'fs';
 import _ from 'lodash';
-import {ConfigProvider} from '../provider';
+import { ConfigProvider } from '../provider';
 import jsonParser from '../parsers/json';
 import yamlParser from '../parsers/yaml';
 
 const parsers = {
   json: jsonParser,
-  yaml: yamlParser
+  yaml: yamlParser,
 };
 
 export default class FileConfigProvider extends ConfigProvider {
@@ -17,7 +17,7 @@ export default class FileConfigProvider extends ConfigProvider {
     this.values = {};
 
     if (typeof options.path !== 'string') {
-      throw new TypeError(`Parameter 'path' has to be provided.`);
+      throw new TypeError('Parameter \'path\' has to be provided.');
     }
 
     if (typeof this.parser === 'string') {
