@@ -2,7 +2,7 @@
 
 import _ from 'lodash';
 import * as util from '../util';
-import { ConfigProvider } from '../provider';
+import ConfigProvider from '../provider';
 
 export default class LocalStorageConfigProvider extends ConfigProvider {
   constructor(options = {}) {

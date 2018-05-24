@@ -1,6 +1,6 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const Config = require('../../').Config;
+const { Config } = require('../../');
 
 chai.should();
 chai.use(chaiAsPromised);

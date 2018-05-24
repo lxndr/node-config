@@ -1,6 +1,6 @@
 import fs from 'fs';
 import _ from 'lodash';
-import { ConfigProvider } from '../provider';
+import ConfigProvider from '../provider';
 import jsonParser from '../parsers/json';
 import yamlParser from '../parsers/yaml';
 
