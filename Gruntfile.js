@@ -34,7 +34,7 @@ module.exports = function (grunt) {
           presets: [
             ['env', {
               target: {
-                node: 6,
+                node: 8,
               },
             }],
           ],
@@ -62,7 +62,13 @@ module.exports = function (grunt) {
               options: {
                 babelrc: false,
                 compact: false,
-                presets: ['es2015'],
+                presets: [
+                  ['env', {
+                    target: {
+                      node: 8,
+                    },
+                  }],
+                ],
                 plugins: [
                   'lodash',
                 ],
