@@ -1,6 +1,6 @@
 {
   "name": "@lxndr/config",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Configuration manager for Node.js and web applications",
   "main": "lib/index.node.js",
   "browser": "lib/index.browser.js",
@@ -10,7 +10,7 @@
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-eslint": "^9.0.0",
-    "babel-loader": "^8.0.1",
+    "babel-loader": "^7.1.5",
     "babel-plugin-lodash": "^3.3.4",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.7.0",
@@ -40,8 +40,8 @@
     "lodash": "^4.17.10"
   },
   "scripts": {
-    "install": "grunt",
-    "test": "grunt test"
+    "prepublishOnly": "grunt",
+    "test": "grunt && grunt test"
   },
   "publishConfig": {
     "access": "public"
