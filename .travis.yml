@@ -8,6 +8,7 @@ deploy:
   email: lxndr87i@gmail.com
   api_key:
     secure: SbUb/K37ZnUBUMQlxjEHoim9w//Rbk50TFPlgcgIkJpgimAfnSka5Q6FNoCyrIKOjSgEJZDh8jPi8mwx1XdhgboltQLufXfEBZbWE+0IiQ76he1H2cN1WrDjiBg04L+1nxNlUpzeXAXZrJp03GiM2QGWQx3cxrAQTRTGo6f3EhcFpL/o2SG3MTXsHIVMhOW3+wOFUQWqM0AGZO7mWWr9nDw6vFP/QbdS31Z5GPTfbRF47sTmXIsLraT5BszLEuKUZ7OxkM2xD+cr9BCA/q0OxnM7r3HfZgzSSpqzbKYOrogMK2m2RttGozeYwEC44CVdSOT0O1wOnA9Cc9oWFIgPmY7uECLEcFhr7L5VRhSFZ+T0iqN7vH2KWJfR46hN3KscABkiSGVwJmqYiDqwArQ45LUAppHShlBhff57cISle188kkajIRouNT0MwsRrx8RsRo8UmfTLMs+WkV6AqMKnIl8Z1DBkIt3ELhSgJ22HEIR6u/eaNCLUohTej2RxjLF0wSz4cF+7zVsNm/nVJQv2bKi5qcs5zX2AVHdHdMxY7paW4yeuBDt/OUKHdP44PdtT1wSCx7l0FBEfIyGR/Mlkh06ny2zHiEVvVZtjsG30uegDJ9QlhB5TD1v4FWxpk+uu1to5t9qz30/B/BZQsoAGtn0Ouyy4k32S2/Y8Jo5+fCc=
+  branch: master
   skip_cleanup: true
   on:
     tags: true

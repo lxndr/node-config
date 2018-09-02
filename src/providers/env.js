@@ -1,9 +1,6 @@
 import _ from 'lodash';
 import ConfigProvider from '../provider';
 
-/**
- * EnvConfigProvider
- */
 export default class EnvConfigProvider extends ConfigProvider {
   constructor(options = {}) {
     super();

@@ -1,7 +1,7 @@
 import globby from 'globby';
 import _ from 'lodash';
 import ConfigProvider from '../provider';
-import FileConfigProvider from '../providers/file';
+import FileConfigProvider from './providers/file';
 import jsonParser from '../parsers/json';
 
 export default class DirectoryConfigProvider extends ConfigProvider {
