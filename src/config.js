@@ -85,40 +85,10 @@ export default class Config {
    * @returns this
    */
   schema(desc) {
-    if (!_.isObject(desc)) {
-      throw new TypeError('Schema must be an object');
-    }
-
-    _.each(desc, (schema, key) => {
-      const path = _.toPath(key);
-
-      if (!_.isObject(schema)) {
-        schema = { default: schema };
-      }
-
-      schema.path = path;
-      this[$schema].push(schema);
-      this._applySchema(schema, this[$storedValues]);
-      this._applySchema(schema, this[$values]);
-    });
-
+    this[$schema].add(desc);
+    this[$schema].validate(this[$storedValues]);
+    this[$schema].validate(this[$values]);
     return this;
-  }
-
-  _applySchema(schema, values) {
-    let value = _.get(values, schema.path);
-
-    if (schema.stringified === true && typeof value === 'string') {
-      value = JSON.parse(value);
-    }
-    if (schema.type === 'array') {
-      value = util.obj2arr(value);
-    }
-    if (schema.default !== undefined && value === undefined) {
-      value = schema.default;
-    }
-
-    _.set(values, schema.path, value);
   }
 
   /**
@@ -133,16 +103,18 @@ export default class Config {
   /**
    * @returns Promise
    */
-  reload() {
-    return Promise.all(this[$providers].map(a => a.load())).then(configs => {
-      this[$storedValues] = _.merge({}, ...configs);
+  async reload() {
+    const configs = await Promise.all(
+      this[$providers].map(a => a.load()),
+    );
 
-      _.each(this[$schema], schema => {
-        this._applySchema(schema, this[$storedValues]);
-      });
+    this[$storedValues] = _.merge({}, ...configs);
 
-      this[$values] = _.cloneDeep(this[$storedValues]);
+    _.each(this[$schema], (schema) => {
+      util.applySchema(schema, this[$storedValues]);
     });
+
+    this[$values] = _.cloneDeep(this[$storedValues]);
   }
 
   /**
@@ -182,16 +154,16 @@ export default class Config {
   /**
    * @returns {Primise}
    */
-  persist() {
+  async persist() {
     const providers = _.filter(this[$providers], { writable: true });
 
     if (providers.length === 0) {
-      return Promise.resolve();
+      return;
     }
 
     let { changed, removed } = util.diff(this[$storedValues], this[$values]);
 
-    _.filter(this[$schema], { stringified: true }).forEach(schema => {
+    _.filter(this[$schema], { stringified: true }).forEach((schema) => {
       if (_.find(changed, change => util.startsWith(change.path, schema.path))) {
         const value = this.get(schema.path);
         _.remove(changed, change => util.startsWith(change.path, schema.path));
@@ -210,26 +182,21 @@ export default class Config {
     changed = _.uniqBy(changed, 'path');
     removed = _.uniq(removed);
 
-    return Promise.resolve()
-      .then(() => {
-        const promises = providers.map(provider => removed.map(path => {
-          log(`remove '${path.join('.')}'`);
-          return provider.remove(path);
-        }));
+    await Promise.all(_.flatten(
+      providers.map(provider => removed.map((path) => {
+        log(`remove '${path.join('.')}'`);
+        return provider.remove(path);
+      })),
+    ));
 
-        return Promise.all(_.flatten(promises));
-      })
-      .then(() => {
-        const promises = providers.map(provider => changed.map(change => {
-          log(`set '${change.path.join('.')}' = '${change.value}'`);
-          return provider.set(change.path, change.value);
-        }));
+    await Promise.all(_.flatten(
+      providers.map(provider => changed.map((change) => {
+        log(`set '${change.path.join('.')}' = '${change.value}'`);
+        return provider.set(change.path, change.value);
+      })),
+    ));
 
-        return Promise.all(_.flatten(promises));
-      })
-      .then(() => {
-        this[$storedValues] = _.cloneDeep(this[$values]);
-      });
+    this[$storedValues] = _.cloneDeep(this[$values]);
   }
 
   /**

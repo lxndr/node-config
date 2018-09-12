@@ -1,7 +1,7 @@
 import globby from 'globby';
 import _ from 'lodash';
 import ConfigProvider from '../provider';
-import FileConfigProvider from './providers/file';
+import FileConfigProvider from './file';
 import jsonParser from '../parsers/json';
 
 export default class DirectoryConfigProvider extends ConfigProvider {
@@ -11,18 +11,18 @@ export default class DirectoryConfigProvider extends ConfigProvider {
     this.parser = options.parser || jsonParser;
   }
 
-  load() {
-    return globby(this.path)
-      .then(files => (
-        Promise.all(files.map(file => {
-          const provider = new FileConfigProvider({
-            path: file,
-            parser: this.parser,
-          });
+  async load() {
+    const files = await globby(this.path);
 
-          return provider.load();
-        }))
-      ))
-      .then(values => _.merge({}, ...values));
+    const values = Promise.all(files.map((file) => {
+      const provider = new FileConfigProvider({
+        path: file,
+        parser: this.parser,
+      });
+
+      return provider.load();
+    }));
+
+    return _.merge({}, ...values);
   }
 }

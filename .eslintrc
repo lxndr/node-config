@@ -2,8 +2,3 @@ extends: airbnb-base
 
 rules:
   no-param-reassign: off
-  class-methods-use-this: off
-  no-underscore-dangle: off
-  arrow-parens:
-  - error
-  - as-needed

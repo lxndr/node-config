@@ -1,3 +1,5 @@
+import Config from '../src';
+
 const config = new Config({
   enchance: true,
 });

@@ -53,7 +53,7 @@ export function merge(target, sources, cb) {
     cb = () => {};
   }
 
-  _.each(sources, source => {
+  _.each(sources, (source) => {
     _merge(target, source, [], cb);
   });
 }
@@ -65,7 +65,7 @@ export function diff(oldObject, newObject) {
   const changed = [];
   const removed = [];
 
-  deepDiff.observableDiff(oldObject, newObject, item => {
+  deepDiff.observableDiff(oldObject, newObject, (item) => {
     if (item.kind === 'N' || item.kind === 'E') {
       if (_.isPlainObject(item.rhs)) {
         walk(item.rhs, (valuePath, value) => {
@@ -153,4 +153,25 @@ export function proxify(config) {
       return true;
     },
   });
+}
+
+/**
+ *
+ */
+export function applySchema(schema, values) {
+  let value = _.get(values, schema.path);
+
+  if (schema.stringified === true && typeof value === 'string') {
+    value = JSON.parse(value);
+  }
+
+  if (schema.type === 'array') {
+    value = obj2arr(value);
+  }
+
+  if (schema.default !== undefined && value === undefined) {
+    value = schema.default;
+  }
+
+  _.set(values, schema.path, value);
 }

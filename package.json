@@ -10,10 +10,13 @@
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
+    "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^9.0.0",
+    "babel-jest": "^23.4.2",
     "eslint": "^4.2.0",
     "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.14.0"
+    "eslint-plugin-import": "^2.14.0",
+    "jest": "^23.5.0"
   },
   "dependencies": {
     "debug": "^3.1.0",
@@ -27,6 +30,8 @@
     "clean": "rm -rf ./lib ./dist",
     "build": "babel -d ./lib ./src",
     "test": "jest",
+    "test:dev": "jest --watch --updateSnapshot",
+    "test:coverage": "jest --coverage",
     "lint": "eslint ./src",
     "lint:fix": "eslint --fix ./src"
   },

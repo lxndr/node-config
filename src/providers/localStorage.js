@@ -1,4 +1,5 @@
 /* globals localStorage */
+/* eslint-disable class-methods-use-this */
 
 import _ from 'lodash';
 import * as util from '../util';
@@ -43,8 +44,8 @@ export default class LocalStorageConfigProvider extends ConfigProvider {
         }
       }, []),
 
-      keys => {
-        _.each(keys, key => {
+      (keys) => {
+        _.each(keys, (key) => {
           localStorage.removeItem(key);
         });
       },

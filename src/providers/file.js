@@ -55,7 +55,7 @@ export default class FileConfigProvider extends ConfigProvider {
   save() {
     return new Promise((resolve, reject) => {
       const data = this.parser.stringify(this.values);
-      fs.writeFile(this.path, data, err => {
+      fs.writeFile(this.path, data, (err) => {
         if (err) {
           reject(err);
           return;

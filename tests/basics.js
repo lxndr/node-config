@@ -1,6 +1,24 @@
-const config = new Config();
+import Config from '../src';
 
-describe('Basics', () => {
+describe('Config', () => {
+  const config = new Config();
+
+  describe('Schema', () => {
+    it('can define default value', () => {
+      config.schema({
+        'sys.logging': true,
+      });
+    });
+
+    it('can define', () => {
+      config.schema({
+        'sys.watching': {
+          default: false,
+        },
+      });
+    });
+  });
+
   it('should add from plain object', () => {
     config.use({
       cpanel: {
