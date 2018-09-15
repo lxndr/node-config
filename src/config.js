@@ -1,38 +1,32 @@
 import _ from 'lodash';
 import debug from 'debug';
+import Schema from './schema';
 import ConfigNamespace from './config-namespace';
 import FunctionConfigProvider from './providers/function';
 import ObjectConfigProvider from './providers/object';
 import ConfigProvider from './provider';
-import * as util from './util';
+import merge from './utils/merge';
 
 const log = debug('config');
-const $schema = Symbol('schema');
-const $providers = Symbol('providers');
-const $storedValues = Symbol('storedValues');
-const $values = Symbol('values');
-const $enchanced = Symbol.for('enchanced');
 const classes = {};
 
 /**
  * Configuration class.
  */
 export default class Config {
-  constructor(options = {}) {
-    this[$schema] = [];
-    this.reset();
+  schema = new Schema()
 
-    this[$enchanced] = options.enchanced === true;
+  providers = []
 
-    if (this[$enchanced]) {
-      return util.proxify(this);
-    }
-  }
+  values = {}
+
+  storedValues = {}
 
   /**
    * Register configuration provider class under a name.
    * @param {String} name - Provider class name.
-   * @param {Class} klass - Class extending ConfigProvider.
+   * @param {ConfigProvider} klass - Class extending ConfigProvider.
+   * @returns this
    */
   static register(name, klass) {
     if (typeof name !== 'string') {
@@ -44,6 +38,7 @@ export default class Config {
     }
 
     classes[name] = klass;
+    return this;
   }
 
   /**
@@ -77,27 +72,17 @@ export default class Config {
     }
 
     provider.writable = options && options.writable && _.isFunction(provider.set);
-    this[$providers].push(provider);
+    this.providers.push(provider);
     return this;
   }
 
   /**
+   * @param {Object} desc schema descriptior map
    * @returns this
    */
   schema(desc) {
-    this[$schema].add(desc);
-    this[$schema].validate(this[$storedValues]);
-    this[$schema].validate(this[$values]);
+    this.schema.add(desc);
     return this;
-  }
-
-  /**
-   * Removes all providers and values.
-   */
-  reset() {
-    this[$providers] = [];
-    this[$storedValues] = {};
-    this[$values] = {};
   }
 
   /**
@@ -105,16 +90,12 @@ export default class Config {
    */
   async reload() {
     const configs = await Promise.all(
-      this[$providers].map(a => a.load()),
+      this.providers.map(provider => provider.load()),
     );
 
-    this[$storedValues] = _.merge({}, ...configs);
-
-    _.each(this[$schema], (schema) => {
-      util.applySchema(schema, this[$storedValues]);
-    });
-
-    this[$values] = _.cloneDeep(this[$storedValues]);
+    this.storedValues = _.merge({}, ...configs);
+    this.schema.validateAll(this.storedValues);
+    this.values = _.cloneDeep(this.storedValues);
   }
 
   /**
@@ -122,10 +103,10 @@ export default class Config {
    */
   get(key, def) {
     if (!key) {
-      return this[$values];
+      return this.values;
     }
 
-    return _.get(this[$values], key, def);
+    return _.get(this.values, key, def);
   }
 
   /**
@@ -135,7 +116,7 @@ export default class Config {
     let [values] = args;
 
     /* key, value */
-    if (args.length === 2 && (_.isString(values) || _.isArray(values))) {
+    if (args.length >= 2 && (_.isString(values) || _.isArray(values))) {
       const [key, value] = args;
       values = {};
       _.set(values, key, value);
@@ -146,8 +127,7 @@ export default class Config {
       throw new TypeError();
     }
 
-    util.merge(this[$values], values);
-
+    merge(this.values, values);
     return this;
   }
 
@@ -155,15 +135,16 @@ export default class Config {
    * @returns {Primise}
    */
   async persist() {
-    const providers = _.filter(this[$providers], { writable: true });
+    const providers = _.filter(this.providers, { writable: true });
 
     if (providers.length === 0) {
       return;
     }
 
-    let { changed, removed } = util.diff(this[$storedValues], this[$values]);
+    const changes = diff(this.storedValues, this.values);
 
-    _.filter(this[$schema], { stringified: true }).forEach((schema) => {
+/*
+    _.filter(this.schema, { stringified: true }).forEach((schema) => {
       if (_.find(changed, change => util.startsWith(change.path, schema.path))) {
         const value = this.get(schema.path);
         _.remove(changed, change => util.startsWith(change.path, schema.path));
@@ -196,14 +177,15 @@ export default class Config {
       })),
     ));
 
-    this[$storedValues] = _.cloneDeep(this[$values]);
+    this.storedValues = _.cloneDeep(this.values);
+*/
   }
 
   /**
    * @return this
    */
   remove(key) {
-    _.unset(this[$values], key);
+    _.unset(this.values, key);
     return this;
   }
 

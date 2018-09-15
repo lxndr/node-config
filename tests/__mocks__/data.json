@@ -1,0 +1,9 @@
+{
+  "sys": {
+    "logging": {
+      "enabled": true,
+      "level": 1,
+      "outputPath": "/var/log"
+    }
+  }
+}

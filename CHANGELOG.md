@@ -3,6 +3,8 @@
 - Used babel@7.
 - Minimum node@8 supported.
 - Used Jest.
+- Removed enhanced mode
+- Removed Config#reset()
 
 ## [1.0.4] - 2018-09-02
 - Updated packages.

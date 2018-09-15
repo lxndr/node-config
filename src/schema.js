@@ -1,12 +1,17 @@
 import _ from 'lodash';
+import toArray from './utils/to-array';
+
+const types = {
+  string: String,
+  number: Number,
+  array: toArray,
+};
 
 export default class Schema {
-  constructor() {
-    this.keys = {};
-  }
+  keys = {}
 
   /**
-   *
+   * @param {Object} desc schema descriptior map
    */
   add(desc) {
     if (!_.isObject(desc)) {
@@ -14,20 +19,33 @@ export default class Schema {
     }
 
     _.each(desc, (schema, key) => {
-      const path = _.toPath(key);
-
       if (!_.isObject(schema)) {
         schema = { default: schema };
       }
 
-      schema.path = path;
-      this.keys.push(schema);
+      this.keys[key] = schema;
     });
 
     return this;
   }
 
   validate(value) {
-    
+    value = _.get(values, schema.path);
+
+    if (schema.stringified === true && typeof value === 'string') {
+      value = JSON.parse(value);
+    }
+
+    if (schema.type === 'array') {
+      value = obj2arr(value);
+    }
+
+    if (schema.default !== undefined && value === undefined) {
+      value = schema.default;
+    }
+
+    _.set(values, schema.path, value);
+
+    return this;
   }
 }

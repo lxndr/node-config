@@ -1,15 +1,16 @@
+/* eslint-disable class-methods-use-this */
+
 /**
  * @abstract
  */
 export default class ConfigProvider {
-  constructor() {
-    this.mutable = false;
-  }
+  mutable = false
 
   /**
    * Loads from the source.
    * @returns {Promise<Object>}
    */
-  load() {
+  async load() {
+    throw new Error('The load method is not implemented');
   }
 }

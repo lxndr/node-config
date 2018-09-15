@@ -6,13 +6,14 @@ describe('Config', () => {
   describe('Schema', () => {
     it('can define default value', () => {
       config.schema({
-        'sys.logging': true,
+        'sys.logging.enabled': true,
       });
     });
 
     it('can define', () => {
       config.schema({
-        'sys.watching': {
+        'sys.logging.level': {
+          type: 'number',
           default: false,
         },
       });
